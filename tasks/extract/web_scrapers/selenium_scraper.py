@@ -77,6 +77,11 @@ class SeleniumScraper(ABC):
         self.driver.quit()
 
     @abstractmethod
+    def get_season_link(self, season):
+        """ Generate the FBref URL for a given season. """
+        pass
+
+    @abstractmethod
     def scrape_data(self, season):
         """ Abstract method to scrape data for a given season. """
         pass
@@ -86,12 +91,15 @@ class SeleniumScraper(ABC):
         """ Abstract method to save scraped data. """
         pass
 
-    @abstractmethod
     def get_old_seasons_data(self):
-        """ Abstract method to get data for old seasons. """
-        pass
+        """ Scrape historical match data from past seasons. """
+        list_old_seasons = list(
+            range(self.START_SEASON, self.current_season))
+        print(f"📌 List old seasons: {list_old_seasons}")
+        # scrape data for each season
+        for season in list_old_seasons:
+            self.scrape_data(season)
 
-    @abstractmethod
     def get_current_season_data(self):
-        """ Abstract method to get data for the current season. """
-        pass
+        """ Scrape the current season's match data. """
+        return self.scrape_data(self.current_season)

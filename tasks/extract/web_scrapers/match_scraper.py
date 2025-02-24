@@ -1,4 +1,4 @@
-from tasks.extract.web_scrapers.selenium_scraper import SeleniumScraper
+from selenium_scraper import SeleniumScraper
 import datetime
 import pandas as pd
 from selenium.webdriver.common.by import By
@@ -28,7 +28,6 @@ class MatchScraper(SeleniumScraper):
         now = datetime.datetime.now()
         folder_path = os.path.join(
             self.SAVE_PATH, self.MATCHS_LOCATION, str(season))
-        print(f"📌 Folder path {folder_path}")
         os.makedirs(folder_path, exist_ok=True)
         data_name = os.path.join(
             folder_path, f"{now.strftime('%Y-%m-%d_%H-%M-%S')}.csv")
@@ -64,19 +63,6 @@ class MatchScraper(SeleniumScraper):
         except Exception as e:
             print(f"❌ Scraping failed for season {season}: {e}")
             return None
-
-    def get_old_seasons_data(self):
-        """ Scrape historical match data from past seasons. """
-        list_old_seasons = list(
-            range(self.START_SEASON, self.current_season))
-        print(f"📌 List old seasons: {list_old_seasons}")
-        # scrape data for each season
-        for season in list_old_seasons:
-            self.scrape_data(season)
-
-    def get_current_season_data(self):
-        """ Scrape the current season's match data. """
-        return self.scrape_data(self.current_season)
 
 
 # Test
