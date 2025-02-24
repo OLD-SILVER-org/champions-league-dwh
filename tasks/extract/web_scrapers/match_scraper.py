@@ -1,9 +1,6 @@
 from tasks.extract.web_scrapers.selenium_scraper import SeleniumScraper
 import datetime
 import pandas as pd
-import random
-import time
-
 from selenium.webdriver.common.by import By
 import sys
 import os

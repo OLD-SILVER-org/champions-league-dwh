@@ -1,0 +1,6 @@
+
+# MATCHS -> https://fbref.com/en/comps/8/2023-2024/schedule/2023-2024-Champions-League-Scores-and-Fixtures
+# SQUADS, PLAYERS -> https://fbref.com/en/comps/8/2023-2024/stats/2023-2024-Champions-League-Stats
+# SQUADS_DETAIL -> https://fbref.com/en/squads/add600ae/2023-2024/c8
+# PLAYER_DETAIL ->https://fbref.com/en/players/5f09991f
+# CHAMPIONS_LEAGUE -> https://fbref.com/en/comps/8/history/Champions-League-Seasons

@@ -1,0 +1,17 @@
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
+PLAYERS_LOCATION = os.getenv("PLAYERS_LOCATION")
+PLAYERS_DETAIL_LOCATION = os.getenv("PLAYERS_DETAIL_LOCATION")
+SEASONS_LOCATION = os.getenv("SEASONS_LOCATION")
+SQUADS_DETAIL_LOCATION = os.getenv("SQUADS_DETAIL_LOCATION")
+PATH = os.getenv("URL_SCRAPE")
+
+if __name__ == "__main__":
+    print(f"PLAYERS_LOCATION: {PLAYERS_LOCATION}")
+    print(f"PLAYERS_DETAIL_LOCATION: {PLAYERS_DETAIL_LOCATION}")
+    print(f"SEASONS_LOCATION: {SEASONS_LOCATION}")
+    print(f"SQUADS_DETAIL_LOCATION: {SQUADS_DETAIL_LOCATION}")
+    print(f"PATH: {PATH}")
+    pass
