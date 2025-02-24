@@ -1,0 +1,33 @@
+# Ignore Python bytecode & cache
+__pycache__/
+# Ignore environment files
+.env
+# Ignore virtual environment
+venv/
+
+
+# Ignore Docker files
+docker-compose.override.yml
+.dockerignore
+docker/airflow/logs/
+docker/airflow/plugins/
+
+# Ignore data files
+data/*.csv
+data/*.parquet
+data/raw/
+data/processed/
+
+# Ignore test reports & coverage
+tests/__pycache__/
+htmlcov/
+.coverage
+pytest_cache/
+
+# Ignore VSCode & JetBrains IDE configs
+.vscode/
+.idea/
+
+# Ignore system files
+.DS_Store
+Thumbs.db
