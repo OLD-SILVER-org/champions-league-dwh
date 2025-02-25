@@ -1,3 +1,4 @@
+import re
 from selenium_scraper import SeleniumScraper
 import datetime
 import pandas as pd
@@ -5,6 +6,7 @@ from selenium.webdriver.common.by import By
 import sys
 import os
 from io import StringIO
+import time
 # Add the parent directory to sys.path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
@@ -30,25 +32,25 @@ class PlayerScraper(SeleniumScraper):
 
         try:
             self.get(url)  # Open URL using SeleniumScraper
-            # Find the match data table
-            playersTable = self.find_element(By.ID,
-                                             "stats_standard").get_attribute("outerHTML")
-            if not playersTable:
-                print(f"❌ No player data found for season {season}")
+            self.close_cookie_banner()
+            # Click the "Standard Stats" button
+            print(f"📌DEBUG A")
+            self.click_button(By.ID, "stats_standard_control")
+            print(f"📌DEBUG B")
+            # Find the player data table
+            player_tbody = self.find_element(By.ID,
+                                             "stats_standard").find_element(By.TAG_NAME, "tbody")
+            if not player_tbody:
+                print(f"❌ No players data found for season {season}")
                 return None
-            print(
-                f"✅ Successfully fetched player for season {season}")
-
-            # Convert table to DataFrame
-            player_df = pd.read_html(StringIO(playersTable))[0]
-
-            # Save the DataFrame
-            self.save_data(player_df, season)
-            # self.quit()  # Close Selenium WebDriver after scraping
-            return player_df
+            print(f"✅ Successfully fetched players for season {season}: ")
+            print(f"📌DEBUG 0")
+            extracted_data = self.extract_player_data(player_tbody)
+            self.save_data(extracted_data, season)
+            return extracted_data
 
         except Exception as e:
-            print(f"❌ Scraping failed for season {season}: {e}")
+            print(f"❌ Scraping failed for season {season} : {e}")
             return None
 
     def save_data(self, dataframe, season):
@@ -62,6 +64,55 @@ class PlayerScraper(SeleniumScraper):
         dataframe.to_csv(data_name, index=False)
         print(f"✅ Data players saved: {data_name}")
         pass
+
+    def extract_player_data(self, player_tbody):
+        """ Extract player data from the table. """
+        # ✅ Define column names for the DataFrame
+        columns = [
+            "Natural Key",
+            "Name",
+            "Nation",
+            "Positions",
+            "Squad_ID",
+            "Squad",
+            "Born",
+        ]
+        df = pd.DataFrame(columns=columns)  # Initialize an empty DataFrame
+        # ✅ Get all rows within the tbody element
+        rows = player_tbody.find_elements(By.TAG_NAME, "tr")
+        for row in rows:
+            try:
+                # ✅ Extract "Natural Key" from the href link
+                nk = row.find_element(
+                    By.CSS_SELECTOR, 'td[data-stat="player"]').get_attribute("data-append-csv")
+                # ✅ Extract player details
+                name = row.find_element(
+                    By.CSS_SELECTOR, 'td[data-stat="player"]').text
+                nation = row.find_element(
+                    By.CSS_SELECTOR, 'td[data-stat="nationality"]').text
+                positions = row.find_element(
+                    By.CSS_SELECTOR, 'td[data-stat="position"]').text
+                born = row.find_element(
+                    By.CSS_SELECTOR, 'td[data-stat="birth_year"]').text
+                print(f" ✅ DEBUD 1.2 DONE")
+                # ✅ Extract squad details
+                squad_href = row.find_element(
+                    By.CSS_SELECTOR, 'td[data-stat="team"]').find_element(By.TAG_NAME, "a").get_attribute("href")
+                match = re.search(r'/en/squads/([a-zA-Z0-9]+)/', squad_href)
+                squad_id = match.group(1) if match else ""
+                squad = row.find_element(
+                    By.CSS_SELECTOR, 'td[data-stat="team"]').text
+                # ✅ Append the extracted data into the DataFrame
+                df = pd.concat([df, pd.DataFrame(
+                    [[nk, name, nation, positions, squad_id, squad, born]], columns=columns)], ignore_index=True)
+                print(
+                    f"✅ Data extracted for player {nk}, {name}, {nation}, {positions}, {squad_id}, {squad}, {born}")
+            except Exception as e:
+                # ✅ Log errors for debugging
+                print(f"❌ Error processing row: {e}")
+                # Try to continue processing the next row ( data may be missing )
+                self.click_button(By.ID, "stats_standard_control")
+        return df
 
 
 if __name__ == "__main__":

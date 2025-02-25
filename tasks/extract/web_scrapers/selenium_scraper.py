@@ -9,13 +9,15 @@ from fake_useragent import UserAgent
 import datetime
 from dotenv import load_dotenv
 import os
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 
 
 class SeleniumScraper(ABC):
     """ Selenium-based web scraper with configurable settings. """
     load_dotenv()
 
-    def __init__(self, headless=False, wait_time=5, use_fake_agent=True):
+    def __init__(self, headless=True, wait_time=5, use_fake_agent=True):
         super().__init__()
         self.config_option(headless, use_fake_agent)
         self.setup_driver(wait_time)
@@ -103,3 +105,42 @@ class SeleniumScraper(ABC):
     def get_current_season_data(self):
         """ Scrape the current season's match data. """
         return self.scrape_data(self.current_season)
+
+    def click_button(self, by, value):
+        """Click a button with error handling and scrolling."""
+        try:
+            wait = WebDriverWait(self.driver, 10)
+            button = wait.until(EC.element_to_be_clickable((by, value)))
+
+            # Scroll to the button's center
+            self.driver.execute_script(
+                "arguments[0].scrollIntoView({block: 'center'});", button)
+            WebDriverWait(self.driver, 2).until(
+                EC.visibility_of(button))  # Wait for button to be visible
+
+            button.click()
+            print(f"✅ Clicked button [{value}]")
+        except Exception as e:
+            print(f"❌ Failed to click button [{value}]: {e}")
+            self.try_js_click(by, value)
+
+    def try_js_click(self, by, value):
+        """Try clicking using JavaScript as a fallback."""
+        try:
+            button = self.driver.find_element(by, value)
+            self.driver.execute_script("arguments[0].click();", button)
+            print(f"✅ JavaScript clicked button [{value}]")
+        except Exception as js_e:
+            print(
+                f"❌ JavaScript click also failed for button [{value}]: {js_e}")
+
+    def close_cookie_banner(self):
+        """Close the Osano cookie consent banner if it appears."""
+        try:
+            wait = WebDriverWait(self.driver, 5)
+            accept_button = self.find_element(
+                By.CLASS_NAME, "osano-cm-button--type_accept")
+            accept_button.click()
+            print("✅ Closed osano cookie consent popup")
+        except Exception:
+            print("🔄 No cookie popup found, continuing...")

@@ -31,3 +31,6 @@ pytest_cache/
 # Ignore system files
 .DS_Store
 Thumbs.db
+
+# Ignore Notes
+notes/
