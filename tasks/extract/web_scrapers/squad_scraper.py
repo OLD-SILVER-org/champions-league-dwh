@@ -40,10 +40,10 @@ class SquadScraper(SeleniumScraper):
             print(f"✅ Successfully fetched squad for season {season}")
             print(f"📌DEBUG 0")
             # Save the DataFrame
-            data_more = self.extract_squad_data(squad_tbody)
-            self.save_data(data_more, season)
+            extracted_data = self.extract_squad_data(squad_tbody)
+            self.save_data(extracted_data, season)
             # Feature get more data in a row
-            return data_more
+            return extracted_data
 
         except Exception as e:
             print(f"❌ Scraping failed for season {season}: {e}")
