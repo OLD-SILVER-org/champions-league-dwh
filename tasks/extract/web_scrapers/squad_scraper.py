@@ -5,6 +5,7 @@ from selenium.webdriver.common.by import By
 import sys
 import os
 from io import StringIO
+import re
 # Add the parent directory to sys.path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
@@ -29,21 +30,20 @@ class SquadScraper(SeleniumScraper):
         print(f"📌 Scraping season {season} link: {url}")
 
         try:
-            self.get(url)  # Open URL using SeleniumScraper
+            self.get(url)
             # Find the match data table
-            squadsTable = self.find_element(
-                By.ID, "stats_squads_standard_for").get_attribute("outerHTML")
-            if not squadsTable:
+            squad_tbody = self.find_element(
+                By.ID, "stats_squads_standard_for").find_element(By.TAG_NAME, "tbody")
+            if not squad_tbody:
                 print(f"❌ No squad data found for season {season}")
                 return None
             print(f"✅ Successfully fetched squad for season {season}")
-
-            # Convert table to DataFrame
-            squad_df = pd.read_html(StringIO(squadsTable))[0]
+            print(f"📌DEBUG 0")
             # Save the DataFrame
-            self.save_data(squad_df, season)
-            # self.quit()  # Close Selenium WebDriver after scraping
-            return squad_df
+            data_more = self.extract_squad_data(squad_tbody)
+            self.save_data(data_more, season)
+            # Feature get more data in a row
+            return data_more
 
         except Exception as e:
             print(f"❌ Scraping failed for season {season}: {e}")
@@ -60,3 +60,60 @@ class SquadScraper(SeleniumScraper):
         dataframe.to_csv(data_name, index=False)
         print(f"✅ Data squads saved: {data_name}")
         pass
+
+    def extract_squad_data(self, squad_tbody):
+        """ Extract squad data from the table. """
+        # ✅ Define column names for the DataFrame
+        columns = [
+            "Natural Key",
+            "Country",
+            "Name",
+            "Number Of Player",
+            "Matches Played",
+        ]
+        df = pd.DataFrame(columns=columns)  # Initialize an empty DataFrame
+
+        # ✅ Get all rows within the tbody element
+        rows = squad_tbody.find_elements(By.TAG_NAME, "tr")
+
+        for row in rows:
+            try:
+                # ✅ Extract team name and country from the <th> tag
+                th = row.find_element(By.TAG_NAME, "th")
+                span = th.find_element(By.TAG_NAME, "span")
+                a_tag = th.find_element(By.TAG_NAME, "a")
+
+                # ✅ Get team name and country details
+                href = a_tag.get_attribute("href")
+                name = a_tag.text  # Get team name
+                country = span.get_attribute("title")  # Get country name
+
+                # ✅ Extract "Natural Key" from the href link
+                match = re.search(r'/en/squads/([a-zA-Z0-9]+)/', href)
+                nk = match.group(1) if match else ""
+
+                # ✅ Extract the number of players used and matches played
+                number_of_player = row.find_element(
+                    By.CSS_SELECTOR, 'td[data-stat="players_used"]').text
+                matches_played = row.find_element(
+                    By.CSS_SELECTOR, 'td[data-stat="games"]').text
+
+                # ✅ Append the extracted data into the DataFrame
+                df = pd.concat([df, pd.DataFrame(
+                    [[nk, country, name, number_of_player, matches_played]], columns=columns)], ignore_index=True)
+
+                print(
+                    f"📌 Data extracted: {nk, country, name, number_of_player, matches_played}")
+
+            except Exception as e:
+                # ✅ Log errors for debugging
+                print(f"❌ Error processing row {row.text}: {e}")
+
+        return df
+
+
+if __name__ == "__main__":
+    scraper = SquadScraper()
+    scraper.get_current_season_data()
+    scraper.quit()
+    pass
