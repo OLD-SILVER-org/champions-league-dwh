@@ -100,7 +100,7 @@ class SquadScraper(SeleniumScraper):
 
                 # ✅ Append the extracted data into the DataFrame
                 df = pd.concat([df, pd.DataFrame(
-                    [[nk, country, name, number_of_player, matches_played]], columns=columns)], columns=columns, ignore_index=True)
+                    [[nk, country, name, number_of_player, matches_played]], columns=columns)], ignore_index=True)
 
                 print(
                     f"📌 Data extracted: {nk, country, name, number_of_player, matches_played}")
