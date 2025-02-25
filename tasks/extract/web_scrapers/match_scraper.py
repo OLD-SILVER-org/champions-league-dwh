@@ -10,7 +10,7 @@ import re
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 
-class MatcheScraper(SeleniumScraper):
+class MatchScraper(SeleniumScraper):
     """ Scraper for FBref football match data using Selenium. """
 
     def __init__(self):
@@ -43,15 +43,15 @@ class MatcheScraper(SeleniumScraper):
         try:
             self.get(url)  # Open URL using SeleniumScraper
             # Find the match data table
-            matche_tbody = self.find_element(
+            match_tbody = self.find_element(
                 By.CLASS_NAME, "stats_table").find_element(By.TAG_NAME, "tbody")
 
-            if not matche_tbody:
+            if not match_tbody:
                 print(f"❌ No match data found for season {season}")
                 return None
 
             print(f"✅ Successfully fetched page for season {season}")
-            extracted_data = self.extract_matche_data(matche_tbody)
+            extracted_data = self.extract_match_data(match_tbody)
             self.save_data(extracted_data, season)
             return extracted_data
 
@@ -59,7 +59,7 @@ class MatcheScraper(SeleniumScraper):
             print(f"❌ Scraping failed for season {season}: {e}")
             return None
 
-    def extract_matche_data(self, match_tbody):
+    def extract_match_data(self, match_tbody):
         """ Extract match data from the table. """
         # ✅ Define column names for the DataFrame
         columns = [
@@ -131,6 +131,6 @@ class MatcheScraper(SeleniumScraper):
 
 # Test
 if __name__ == "__main__":
-    scraper = MatcheScraper()
+    scraper = MatchScraper()
     scraper.get_current_season_data()
     scraper.quit()  # Close Selenium WebDriver after scraping
