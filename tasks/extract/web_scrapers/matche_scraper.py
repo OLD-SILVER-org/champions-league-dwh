@@ -5,6 +5,7 @@ from selenium.webdriver.common.by import By
 import sys
 import os
 from io import StringIO
+import re
 # Add the parent directory to sys.path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
@@ -42,27 +43,90 @@ class MatcheScraper(SeleniumScraper):
         try:
             self.get(url)  # Open URL using SeleniumScraper
             # Find the match data table
-            table = self.find_element(
-                By.CLASS_NAME, "stats_table").get_attribute("outerHTML")
+            matche_tbody = self.find_element(
+                By.CLASS_NAME, "stats_table").find_element(By.TAG_NAME, "tbody")
 
-            if not table:
+            if not matche_tbody:
                 print(f"❌ No match data found for season {season}")
                 return None
 
             print(f"✅ Successfully fetched page for season {season}")
-
-            # Convert table to DataFrame
-            # Pandas only return list of dataframes, [0] to get first
-            dataframe = pd.read_html(StringIO(table))[0]
-
-            # Save the DataFrame
-            self.save_data(dataframe, season)
-            # self.quit()  # Close Selenium WebDriver after scraping
-            return dataframe
+            extracted_data = self.extract_matche_data(matche_tbody)
+            self.save_data(extracted_data, season)
+            return extracted_data
 
         except Exception as e:
             print(f"❌ Scraping failed for season {season}: {e}")
             return None
+
+    def extract_matche_data(self, match_tbody):
+        """ Extract match data from the table. """
+        # ✅ Define column names for the DataFrame
+        columns = [
+            "Round", "Week", "Day", "Date", "Time",
+            "Home", "xG_Home", "Score", "xG_Away", "Away",
+            "Attendance", "Venue", "Referee", "Match Report"
+        ]
+        df = pd.DataFrame(columns=columns)  # Initialize an empty DataFrame
+
+        # ✅ Get all rows within the tbody element
+        rows = match_tbody.find_elements(By.TAG_NAME, "tr")
+
+        for row in rows:
+            try:
+                print(f"📌 DEBUG - Processing a row")
+
+                # ✅    Extract match details
+                round_text = row.find_element(By.TAG_NAME, "th").text
+                week = row.find_element(
+                    By.CSS_SELECTOR, 'td[data-stat="gameweek"]').text
+                day = row.find_element(
+                    By.CSS_SELECTOR, 'td[data-stat="dayofweek"]').text
+                date = row.find_element(
+                    By.CSS_SELECTOR, 'td[data-stat="date"]').text  # 🛠 Fix
+                time = row.find_element(
+                    # 🛠 Fix
+                    By.CSS_SELECTOR, 'td[data-stat="start_time"]').text
+                home = row.find_element(
+                    By.CSS_SELECTOR, 'td[data-stat="home_team"]').text
+                xG_Home = row.find_element(
+                    By.CSS_SELECTOR, 'td[data-stat="home_xg"]').text
+                score = row.find_element(
+                    By.CSS_SELECTOR, 'td[data-stat="score"]').text
+                xg_Away = row.find_element(
+                    By.CSS_SELECTOR, 'td[data-stat="away_xg"]').text
+                away = row.find_element(
+                    By.CSS_SELECTOR, 'td[data-stat="away_team"]').text
+                attendance = row.find_element(
+                    By.CSS_SELECTOR, 'td[data-stat="attendance"]').text
+                venue = row.find_element(
+                    By.CSS_SELECTOR, 'td[data-stat="venue"]').text
+                referee = row.find_element(
+                    By.CSS_SELECTOR, 'td[data-stat="referee"]').text  # 🛠 Fix
+
+                # ✅ Extract match report ID
+                try:
+                    match_td = row.find_element(
+                        By.CSS_SELECTOR, 'td[data-stat="match_report"]')
+                    match_href = match_td.find_element(
+                        By.TAG_NAME, "a").get_attribute("href")
+                    match_report = re.search(
+                        r'/matches/([a-zA-Z0-9]+)/', match_href)
+                    match_report = match_report.group(
+                        1) if match_report else ""
+                except Exception:
+                    match_report = ""
+
+                # ✅ Append the extracted data into the DataFrame
+                df = pd.concat([df, pd.DataFrame([[
+                    round_text, week, day, date, time, home, xG_Home, score,
+                    xg_Away, away, attendance, venue, referee, match_report
+                ]], columns=columns)], ignore_index=True)
+
+            except Exception as e:
+                print(f"❌ Error processing row: {e}")
+
+        return df
 
 
 # Test
@@ -70,5 +134,3 @@ if __name__ == "__main__":
     scraper = MatcheScraper()
     scraper.get_current_season_data()
     scraper.quit()  # Close Selenium WebDriver after scraping
-    # scraper.get_current_season_data()
-    # scraper.quit()  # Close Selenium WebDriver after scraping
