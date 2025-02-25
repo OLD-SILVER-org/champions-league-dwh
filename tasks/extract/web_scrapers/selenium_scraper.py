@@ -107,37 +107,30 @@ class SeleniumScraper(ABC):
         return self.scrape_data(self.current_season)
 
     def click_button(self, by, value):
-        """Click a button with error handling and scrolling."""
+        """Click button with minimal wait time."""
         try:
-            wait = WebDriverWait(self.driver, 10)
-            button = wait.until(EC.element_to_be_clickable((by, value)))
-
-            # Scroll to the button's center
+            button = self.driver.find_element(by, value)
             self.driver.execute_script(
-                "arguments[0].scrollIntoView({block: 'center'});", button)
-            WebDriverWait(self.driver, 2).until(
-                EC.visibility_of(button))  # Wait for button to be visible
-
+                "arguments[0].scrollIntoView();", button)  # Scroll nhanh
             button.click()
             print(f"✅ Clicked button [{value}]")
-        except Exception as e:
-            print(f"❌ Failed to click button [{value}]: {e}")
+        except Exception:
+            print(f"🔄 Normal click failed, trying JS click [{value}]")
             self.try_js_click(by, value)
 
     def try_js_click(self, by, value):
-        """Try clicking using JavaScript as a fallback."""
+        """Try JavaScript click instantly if normal click fails."""
         try:
             button = self.driver.find_element(by, value)
             self.driver.execute_script("arguments[0].click();", button)
             print(f"✅ JavaScript clicked button [{value}]")
-        except Exception as js_e:
-            print(
-                f"❌ JavaScript click also failed for button [{value}]: {js_e}")
+        except Exception:
+            print(f"❌ Completely failed to click button [{value}]")
 
     def close_cookie_banner(self):
         """Close the Osano cookie consent banner if it appears."""
         try:
-            wait = WebDriverWait(self.driver, 5)
+            wait = WebDriverWait(self.driver, 1)
             accept_button = self.find_element(
                 By.CLASS_NAME, "osano-cm-button--type_accept")
             accept_button.click()
