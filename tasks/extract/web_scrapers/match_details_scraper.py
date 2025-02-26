@@ -89,35 +89,32 @@ class MatchDetailsScraper(SeleniumScraper):
 
         # ✅ Get all rows within the tbody element
         rows = match_tbody.find_elements(By.TAG_NAME, "tr")
-
+        starting_players = []
+        bench_players = []
+        is_bench = False
+        skip_first = True
         for row in rows:
             try:
-                # ✅ Extract team name and country from the <th> tag
-                th = row.find_element(By.TAG_NAME, "th")
-                span = th.find_element(By.TAG_NAME, "span")
-                a_tag = th.find_element(By.TAG_NAME, "a")
+                if "Bench" in row.text:
+                    is_bench = True
+                    continue
+                if skip_first:
+                    skip_first = False
+                    continue
+                empty_player = {
+                    "player_id": None,
+                    "team_id": None,
+                    "goals": 0,
+                    "yellow_cards": 0,
+                    "red_card": 0,
+                    "bench": False
+                }
 
-                # ✅ Get team name and country details
-                href = a_tag.get_attribute("href")
-                name = a_tag.text  # Get team name
-                country = span.get_attribute("title")  # Get country name
+                # df = pd.concat([df, pd.DataFrame(
+                # [[nk, country, name, number_of_player, matches_played]], columns=columns)], ignore_index=True)
 
-                # ✅ Extract "Natural Key" from the href link
-                match = re.search(r'/en/squads/([a-zA-Z0-9]+)/', href)
-                nk = match.group(1) if match else ""
-
-                # ✅ Extract the number of players used and matches played
-                number_of_player = row.find_element(
-                    By.CSS_SELECTOR, 'td[data-stat="players_used"]').text
-                matches_played = row.find_element(
-                    By.CSS_SELECTOR, 'td[data-stat="games"]').text
-
-                # ✅ Append the extracted data into the DataFrame
-                df = pd.concat([df, pd.DataFrame(
-                    [[nk, country, name, number_of_player, matches_played]], columns=columns)], ignore_index=True)
-
-                print(
-                    f"📌 Data extracted: {nk, country, name, number_of_player, matches_played}")
+                # print(
+                # f"📌 Data extracted: {nk, country, name, number_of_player, matches_played}")
 
             except Exception as e:
                 # ✅ Log errors for debugging

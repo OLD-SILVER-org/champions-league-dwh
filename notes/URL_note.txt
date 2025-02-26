@@ -6,3 +6,4 @@ squads - id stats_squads_standard_for
 # SQUADS_DETAIL -> https://fbref.com/en/squads/add600ae/2023-2024/c8
 # PLAYER_DETAIL ->https://fbref.com/en/players/5f09991f
 # CHAMPIONS_LEAGUE -> https://fbref.com/en/comps/8/history/Champions-League-Seasons
+# MATCH_DETAILS -> https://fbref.com/en/matches/07f058d4

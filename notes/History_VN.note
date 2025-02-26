@@ -1,0 +1,18 @@
+thiết kế lấy selerrium là lớp cha và có vài phương thức abstract, vì việc craw luôn gọi selerium nên như vầy là dược
+cũng dễ mở rộng sau này nếu như có thêm API hoặc craw từ 1 web khác
+
+Mình quyết định sắp xếp dữ liệu 1 chút co dễ transform sau này, vì mình chỉ sắp xếp, 
+lọc lấy những gì mình cần nhưng không thay đổi dữ liệu nên không tính là nhầm phần transform 
+trong extract đâu nhỉ, kiểu đi chọn thực phẩm chứ đâu có chế biến đâu :D
+
+ngày 26/2/2025 : vướn chổ popup và hidden button, xử lý 1 nút xong rồi nó lại có 1 nút khác khi không để ý, làm dữ liệu lỗi.
+id nó là : stats_standard_control.
+
+Đôi lúc selerium bị load chậm nhưng lại cố gắn gọi truy vấn nên không được, gây lỗi, phải cố gọi lại.
+mà nếu danh sách trận chưa có nhưng rang nó vẫn chừa chổ trống nhưng buộc load hết
+
+khó khăn : ở phần match detail, mình cần xác định lấy những gì và lấy ntn.
+giải quyết : ban đầu thì mình nghĩ sẽ lấy hai bảng 1 là thông tin chung, 2 là sự kiện, 
+tuy  làm vậy rõ ràng nhưng mình quyết định sẽ lấy 1 bảng theo cách tối giản nhất nhưng đủ lữ liệu cần thiết
+các sự kiện diễn ra mình chỉ cần xác định có sự kiện gì và count + 1 lên khi nó xảy ra.
+
