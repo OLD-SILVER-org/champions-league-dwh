@@ -46,6 +46,8 @@ class SeleniumScraper(ABC):
             "--disable-blink-features=AutomationControlled")
         self.options.add_argument("--no-sandbox")
         self.options.add_argument("--disable-dev-shm-usage")
+        # Ignore certificate SSL
+        self.options.add_argument("--ignore-certificate-errors")
         pass
 
     def setup_driver(self, wait_time):
