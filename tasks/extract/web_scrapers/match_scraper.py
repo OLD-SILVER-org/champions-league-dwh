@@ -61,17 +61,18 @@ class MatchScraper(SeleniumScraper):
 
     def extract_match_data(self, match_tbody):
         """ Extract match data from the table. """
-        columns = [
-            "Round", "Week", "Day", "Date", "Time",
-            "Home", "xG_Home", "Score", "xG_Away", "Away",
-            "Attendance", "Venue", "Referee", "Match Report"
-        ]
+        columns = ["Session",
+                   "Round", "Week", "Day", "Date", "Time",
+                   "Home", "xG_Home", "Score", "xG_Away", "Away",
+                   "Attendance", "Venue", "Referee", "Match Report"
+                   ]
         df_list = []  # List to store extracted rows before converting to DataFrame
         rows = match_tbody.find_elements(By.TAG_NAME, "tr")
         for row in rows:
             try:
                 print(f"📌 DEBUG - Processing a row")
                 # ✅ Extract match details
+                session = self.current_season
                 round_text = row.find_element(By.TAG_NAME, "th").text
                 week = row.find_element(
                     By.CSS_SELECTOR, 'td[data-stat="gameweek"]').text
@@ -109,14 +110,14 @@ class MatchScraper(SeleniumScraper):
                     match_report = match_report.group(
                         1) if match_report else ""
                 # ✅ Append to list
-                df_list.append([
-                    round_text, week, day, date, time, home, xG_Home, score,
-                    xG_Away, away, attendance, venue, referee, match_report
-                ])
+                df_list.append([session,
+                                round_text, week, day, date, time, home, xG_Home, score,
+                                xG_Away, away, attendance, venue, referee, match_report
+                                ])
             except Exception as e:
                 print(f"❌ Error processing row: {e}")
                 continue
-        # ✅ Convert list to DataFrame once (tối ưu hiệu suất)
+        # ✅ Convert list to DataFrame once
         return pd.DataFrame(df_list, columns=columns) if df_list else None
 
 
