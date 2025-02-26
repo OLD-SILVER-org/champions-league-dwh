@@ -61,31 +61,25 @@ class MatchScraper(SeleniumScraper):
 
     def extract_match_data(self, match_tbody):
         """ Extract match data from the table. """
-        # ✅ Define column names for the DataFrame
         columns = [
             "Round", "Week", "Day", "Date", "Time",
             "Home", "xG_Home", "Score", "xG_Away", "Away",
             "Attendance", "Venue", "Referee", "Match Report"
         ]
-        df = pd.DataFrame(columns=columns)  # Initialize an empty DataFrame
-
-        # ✅ Get all rows within the tbody element
+        df_list = []  # List to store extracted rows before converting to DataFrame
         rows = match_tbody.find_elements(By.TAG_NAME, "tr")
-
         for row in rows:
             try:
                 print(f"📌 DEBUG - Processing a row")
-
-                # ✅    Extract match details
+                # ✅ Extract match details
                 round_text = row.find_element(By.TAG_NAME, "th").text
                 week = row.find_element(
                     By.CSS_SELECTOR, 'td[data-stat="gameweek"]').text
                 day = row.find_element(
                     By.CSS_SELECTOR, 'td[data-stat="dayofweek"]').text
                 date = row.find_element(
-                    By.CSS_SELECTOR, 'td[data-stat="date"]').text  # 🛠 Fix
+                    By.CSS_SELECTOR, 'td[data-stat="date"]').text
                 time = row.find_element(
-                    # 🛠 Fix
                     By.CSS_SELECTOR, 'td[data-stat="start_time"]').text
                 home = row.find_element(
                     By.CSS_SELECTOR, 'td[data-stat="home_team"]').text
@@ -93,7 +87,7 @@ class MatchScraper(SeleniumScraper):
                     By.CSS_SELECTOR, 'td[data-stat="home_xg"]').text
                 score = row.find_element(
                     By.CSS_SELECTOR, 'td[data-stat="score"]').text
-                xg_Away = row.find_element(
+                xG_Away = row.find_element(
                     By.CSS_SELECTOR, 'td[data-stat="away_xg"]').text
                 away = row.find_element(
                     By.CSS_SELECTOR, 'td[data-stat="away_team"]').text
@@ -102,31 +96,28 @@ class MatchScraper(SeleniumScraper):
                 venue = row.find_element(
                     By.CSS_SELECTOR, 'td[data-stat="venue"]').text
                 referee = row.find_element(
-                    By.CSS_SELECTOR, 'td[data-stat="referee"]').text  # 🛠 Fix
-
+                    By.CSS_SELECTOR, 'td[data-stat="referee"]').text
                 # ✅ Extract match report ID
-                try:
-                    match_td = row.find_element(
-                        By.CSS_SELECTOR, 'td[data-stat="match_report"]')
-                    match_href = match_td.find_element(
+                match_report = ""
+                match_td = row.find_elements(
+                    By.CSS_SELECTOR, 'td[data-stat="match_report"]')
+                if match_td and match_td[0].find_elements(By.TAG_NAME, "a"):
+                    match_href = match_td[0].find_element(
                         By.TAG_NAME, "a").get_attribute("href")
                     match_report = re.search(
                         r'/matches/([a-zA-Z0-9]+)/', match_href)
                     match_report = match_report.group(
                         1) if match_report else ""
-                except Exception:
-                    match_report = ""
-
-                # ✅ Append the extracted data into the DataFrame
-                df = pd.concat([df, pd.DataFrame([[
+                # ✅ Append to list
+                df_list.append([
                     round_text, week, day, date, time, home, xG_Home, score,
-                    xg_Away, away, attendance, venue, referee, match_report
-                ]], columns=columns)], ignore_index=True)
-
+                    xG_Away, away, attendance, venue, referee, match_report
+                ])
             except Exception as e:
                 print(f"❌ Error processing row: {e}")
-
-        return df
+                continue
+        # ✅ Convert list to DataFrame once (tối ưu hiệu suất)
+        return pd.DataFrame(df_list, columns=columns) if df_list else None
 
 
 # Test
