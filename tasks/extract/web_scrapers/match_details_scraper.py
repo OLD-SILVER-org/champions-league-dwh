@@ -51,7 +51,6 @@ class MatchDetailsScraper(SeleniumScraper):
             extracted_data = pd.concat(
                 [extracted_data_a, extracted_data_b], ignore_index=True)
             self.save_data(extracted_data)
-            # Feature get more data in a row
             return extracted_data
 
         except Exception as e:
@@ -82,43 +81,67 @@ class MatchDetailsScraper(SeleniumScraper):
     def extract_match_data(self, match_tbody, team_id):
         """ Extract match data from the table. """
         # ✅ Define column names for the DataFrame
-        columns = ["match_id", "player_id", "team_id",
-                   "goals", "yellow_cards", "red_card", "bench"]
+        columns = ["match_id", "player_id", "shirt_number", "team_id",
+                   "goals", "own_goals", "yellow_cards", "red_card", "bench"]
 
         df = pd.DataFrame(columns=columns)  # Initialize an empty DataFrame
 
         # ✅ Get all rows within the tbody element
         rows = match_tbody.find_elements(By.TAG_NAME, "tr")
-        starting_players = []
-        bench_players = []
+        squad_team = []
         is_bench = False
         skip_first = True
+
         for row in rows:
             try:
-                if "Bench" in row.text:
-                    is_bench = True
-                    continue
+                # Skip first line
                 if skip_first:
                     skip_first = False
                     continue
-                empty_player = {
-                    "player_id": None,
-                    "team_id": None,
-                    "goals": 0,
-                    "yellow_cards": 0,
-                    "red_card": 0,
-                    "bench": False
+                list_td = row.find_elements(By.TAG_NAME, "td")
+                link = list_td[1].find_element(
+                    By.TAG_NAME, "a").get_attribute("href")
+                divs = list_td[1].find_elements(By.TAG_NAME, "div")
+
+                # Extract player's information
+                shirt_number = list_td[0].text
+                player_id = link.split('/players/')[1].split('/')[0]
+                goals = sum(
+                    1 for div in divs if "goals" in div.get_attribute("class"))
+                own_goals = sum(
+                    1 for div in divs if "own_goals" in div.get_attribute("class"))
+                yellow_cards = sum(
+                    1 for div in divs if "yellow_card" in div.get_attribute("class"))
+                red_card = sum(
+                    1 for div in divs if "red_card" in div.get_attribute("class"))
+                is_bench = bool(row.find("th"))
+
+                # ✅ Add details into dict
+                player_data = {
+                    "match_id": self.match_id,  # You might need to pass match_id from somewhere
+                    "player_id": player_id,
+                    "shirt_number": shirt_number,  # Fixed missing comma in column definition
+                    "team_id": team_id,
+                    "goals": goals,
+                    "own_goals": own_goals,
+                    "yellow_cards": yellow_cards,
+                    "red_card": red_card,
+                    "bench": is_bench
                 }
-
-                # df = pd.concat([df, pd.DataFrame(
-                # [[nk, country, name, number_of_player, matches_played]], columns=columns)], ignore_index=True)
-
-                # print(
-                # f"📌 Data extracted: {nk, country, name, number_of_player, matches_played}")
+                # ✅ Append player data to DataFrame
+                df = pd.concat(
+                    [df, pd.DataFrame([player_data])], ignore_index=True)
 
             except Exception as e:
                 # ✅ Log errors for debugging
-                print(f"❌ Error processing row {row.text}: {e}")
+                print(f"❌ Error extracting match data for team {team_id}: {e}")
                 pass
-
         return df
+
+
+# Test
+if __name__ == "__main__":
+    scraper = MatchDetailsScraper()
+    scraper.match_id = "615d637e"
+    scraper.scrape_data()
+    scraper.quit()  # Close Selenium WebDriver after scraping

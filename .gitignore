@@ -33,4 +33,4 @@ pytest_cache/
 Thumbs.db
 
 # Ignore Notes
-notes/
+# notes/
