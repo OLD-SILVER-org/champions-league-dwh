@@ -61,7 +61,7 @@ class MatchScraper(SeleniumScraper):
 
     def extract_match_data(self, match_tbody):
         """ Extract match data from the table. """
-        columns = ["Session",
+        columns = ["Season",
                    "Round", "Week", "Day", "Date", "Time",
                    "Home", "xG_Home", "Score", "xG_Away", "Away",
                    "Attendance", "Venue", "Referee", "Match Report"
@@ -72,7 +72,7 @@ class MatchScraper(SeleniumScraper):
             try:
                 print(f"📌 DEBUG - Processing a row")
                 # ✅ Extract match details
-                session = self.current_season
+                season = self.current_season
                 round_text = row.find_element(By.TAG_NAME, "th").text
                 week = row.find_element(
                     By.CSS_SELECTOR, 'td[data-stat="gameweek"]').text
@@ -110,7 +110,7 @@ class MatchScraper(SeleniumScraper):
                     match_report = match_report.group(
                         1) if match_report else ""
                 # ✅ Append to list
-                df_list.append([session,
+                df_list.append([season,
                                 round_text, week, day, date, time, home, xG_Home, score,
                                 xG_Away, away, attendance, venue, referee, match_report
                                 ])
