@@ -3,14 +3,27 @@ import pandas as pd
 import time
 from abc import ABC, abstractmethod
 from dotenv import load_dotenv
+import datetime
 
 # Load environment variables
 load_dotenv()
 
 
-class BaseTransform(ABC):
+class BaseTransformer(ABC):
     def __init__(self):
         super().__init__()
+        self.SAVE_PATH = os.getenv("SAVE_PATH")
+
+    def get_current_season(self):
+        """ Determine the current football season. """
+        current_year = datetime.datetime.now().year
+        current_month = datetime.datetime.now().month
+        return current_year - 1 if current_month <= 6 else current_year
+
+    @abstractmethod
+    def transform_old_data(self):
+        """Transform historical data from past seasons"""
+        pass
 
     @abstractmethod
     def transform_data(self):
@@ -18,7 +31,7 @@ class BaseTransform(ABC):
         pass
 
     @abstractmethod
-    def get_extracted_data(self, path: str):
+    def get_extracted_data(self):
         """Load extracted data from file"""
         pass
 
@@ -51,3 +64,8 @@ class BaseTransform(ABC):
     def validate_data(self, df: pd.DataFrame) -> None:
         """Check data integrity and quality"""
         pass
+
+    @abstractmethod
+    def save_data(self, df: pd.DataFrame, path: str):
+        """Save transformed data to a file"""
+        df.to_csv(path, index=False)  # Placeholder, có thể thay đổ
