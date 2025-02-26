@@ -15,4 +15,5 @@ khó khăn : ở phần match detail, mình cần xác định lấy những gì
 giải quyết : ban đầu thì mình nghĩ sẽ lấy hai bảng 1 là thông tin chung, 2 là sự kiện, 
 tuy  làm vậy rõ ràng nhưng mình quyết định sẽ lấy 1 bảng theo cách tối giản nhất nhưng đủ lữ liệu cần thiết
 các sự kiện diễn ra mình chỉ cần xác định có sự kiện gì và count + 1 lên khi nó xảy ra.
+hơi lòng vòng chổ xác nhận nó là bench không nhưng đã xử lý dc :D, công nhận nhìn OCD thật!
 
