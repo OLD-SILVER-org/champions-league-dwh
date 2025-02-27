@@ -32,7 +32,7 @@ class SquadTransfomer(BaseTransformer):
         print("✅ Keys added!")
 
         # 5. Create relationships between tables
-        self.create_relations()
+        self.create_relations(df)
         print("✅ Relationships created!")
 
         # 6. Compute additional statistics (KPIs, derived metrics, etc.)
