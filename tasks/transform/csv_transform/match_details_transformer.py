@@ -107,11 +107,10 @@ class MatchDetailsTransfomer(BaseTransformer):
         """Player (SQUADS) is a dim data, have nk at Extract process -> dont need more"""
         return df
 
-    def create_relations(self):
+    def create_relations(self, df: pd.DataFrame) -> pd.DataFrame:
         """Define relationships between different tables."""
-
         # TODO : Create relations with dim tables - Not yet!
-        return
+        return df
 
     def calculate_metrics(self, df: pd.DataFrame) -> pd.DataFrame:
         """Compute additional statistics or KPIs for analysis."""
@@ -127,7 +126,7 @@ class MatchDetailsTransfomer(BaseTransformer):
         """Save transformed data to a CSV file."""
         now = datetime.datetime.now()
         folder_path = os.path.join(
-            self.LV2_SAVE_PATH, self.PLAYERS_LOCATION, str(season))
+            self.LV2_SAVE_PATH, self.MATCH_DETAILS_LOCATION, str(season))
         os.makedirs(folder_path, exist_ok=True)
         data_name = os.path.join(
             folder_path, f"{now.strftime('%Y-%m-%d_%H-%M-%S')}.csv")

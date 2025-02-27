@@ -66,7 +66,7 @@ class BaseTransformer(ABC):
         pass
 
     @abstractmethod
-    def create_relations(self):
+    def create_relations(self, df: pd.DataFrame) -> pd.DataFrame:
         """Establish relationships between tables"""
         pass
 

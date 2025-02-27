@@ -120,11 +120,11 @@ class MatchTransformer(BaseTransformer):
         """Match (SQUAD AND FIXTURES) is a Fact data - > dont need add key, this will auto add when load to db Staging"""
         return df
 
-    def create_relations(self):
+    def create_relations(self, df: pd.DataFrame) -> pd.DataFrame:
         """Define relationships between different tables."""
 
         # TODO : Create relations with dim tables - Not yet!
-        return
+        return df
 
     def calculate_metrics(self, df: pd.DataFrame) -> pd.DataFrame:
         """Compute additional statistics or KPIs for analysis."""
