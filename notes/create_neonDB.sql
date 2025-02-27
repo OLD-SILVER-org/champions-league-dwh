@@ -30,7 +30,6 @@ CREATE TABLE scores_and_fixtures (
     week INT,
     day TEXT,
     date DATE,
-    time TEXT,
     home TEXT,
     xg_home FLOAT,
     score TEXT,
