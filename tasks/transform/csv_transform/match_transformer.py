@@ -70,39 +70,57 @@ class MatchTransformer(BaseTransformer):
         return pd.read_csv(latest_file_path)
 
     def standardize_schema(self, df: pd.DataFrame) -> pd.DataFrame:
-        """Standardize column names & data types."""
-        column_mapping = {
-            "Season": "season",
-            "Round": "round",
-            "Week": "week",
-            "Day": "day",
-            "Date": "date",
-            "Time": "time",
-            "Home": "home",
-            "xG_Home": "xg_home",
-            "Score": "score",
-            "xG_Away": "xg_away",
-            "Away": "away",
-            "Attendance": "attendance",
-            "Venue": "venue",
-            "Referee": "referee",
-            "Match Report": "match_report"
+        """Standardize schema: normalize datetime, data types, and column names."""
+
+        # Convert column names to lowercase
+        df.columns = df.columns.str.lower()
+
+        # Normalize datetime
+        if 'date' in df.columns and 'time' in df.columns:
+            # Extract GMT time from time column
+            if df['time'].str.contains(r'\(\d{2}:\d{2}\)', regex=True).any():
+                df['time'] = df['time'].str.extract(r'\((\d{2}:\d{2})\)')
+
+            # Fix chained assignment issue
+            df['time'] = df['time'].fillna('00:00')
+
+            # Create datetime column
+            df['match_datetime'] = pd.to_datetime(
+                df['date'] + ' ' + df['time'], format='%Y-%m-%d %H:%M', errors='coerce'
+            )
+
+            # Drop old columns
+            df.drop(columns=['date', 'time'], inplace=True, errors='ignore')
+        # Convert attendance to integer, removing commas first
+        if 'attendance' in df.columns:
+            df['attendance'] = df['attendance'].astype(
+                str).str.replace(',', '')
+            df['attendance'] = pd.to_numeric(
+                df['attendance'], errors='coerce').astype('Int64')
+        # Standardize data types
+        type_mapping = {
+            'season': str,
+            'round': str,
+            'week': str,
+            'day': str,
+            'match_datetime': 'datetime64[ns]',
+            'home': str,
+            'xg_home': float,
+            'score': str,
+            'xg_away': float,
+            'away': str,
+            'venue': str,
+            'referee': str
         }
 
-        dtype_mapping = {
-            "date": "datetime64[ns]",  # Convert to datetime format
-            "week": "Int64",  # Convert to integer (nullable)
-            "attendance": "Int64",  # Convert to integer (nullable)
-            "xg_home": "float64",  # Convert to float
-            "xg_away": "float64"   # Convert to float
-        }
-
-        # Rename columns
-        df = df.rename(columns=column_mapping)
-        # Convert data types
-        for col, dtype in dtype_mapping.items():
+        for col, dtype in type_mapping.items():
             if col in df.columns:
-                df[col] = df[col].astype(dtype, errors="ignore")
+                if dtype == float:
+                    df[col] = pd.to_numeric(df[col], errors='coerce')
+                else:
+                    df[col] = df[col].astype(dtype)
+
+        print(f"DEBUG:\n{df.head()}")
         return df
 
     def clean_data(self, df: pd.DataFrame) -> pd.DataFrame:
@@ -128,3 +146,12 @@ class MatchTransformer(BaseTransformer):
     def save_data(self, df: pd.DataFrame, path: str):
         """Save transformed data to a CSV file."""
         df.to_csv(path, index=False)
+
+
+if __name__ == "__main__":
+    transfomer = MatchTransformer()
+    df = transfomer.get_extracted_data(2024)
+    sta = transfomer.standardize_schema(df)
+    print(f"Debug :\n {sta.columns}")
+    print(f"Debug :\n {sta.head()}")
+    pass
