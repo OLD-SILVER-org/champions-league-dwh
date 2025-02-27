@@ -40,7 +40,7 @@ class SquadScraper(SeleniumScraper):
             print(f"✅ Successfully fetched squad for season {season}")
             print(f"📌DEBUG 0")
             # Save the DataFrame
-            extracted_data = self.extract_squad_data(squad_tbody)
+            extracted_data = self.extract_squad_data(squad_tbody, season)
             self.save_data(extracted_data, season)
             # Feature get more data in a row
             return extracted_data
@@ -61,16 +61,16 @@ class SquadScraper(SeleniumScraper):
         print(f"✅ Data squads saved: {data_name}")
         pass
 
-    def extract_squad_data(self, squad_tbody):
+    def extract_squad_data(self, squad_tbody, season):
         """ Extract squad data from the table. """
         # ✅ Define column names for the DataFrame
-        columns = [
-            "Natural Key",
-            "Country",
-            "Name",
-            "Number Of Player",
-            "Matches Played",
-        ]
+        columns = ["Season",
+                   "Natural Key",
+                   "Country",
+                   "Name",
+                   "Number Of Player",
+                   "Matches Played",
+                   ]
         df = pd.DataFrame(columns=columns)  # Initialize an empty DataFrame
 
         # ✅ Get all rows within the tbody element
@@ -100,10 +100,10 @@ class SquadScraper(SeleniumScraper):
 
                 # ✅ Append the extracted data into the DataFrame
                 df = pd.concat([df, pd.DataFrame(
-                    [[nk, country, name, number_of_player, matches_played]], columns=columns)], ignore_index=True)
+                    [[season, nk, country, name, number_of_player, matches_played]], columns=columns)], ignore_index=True)
 
                 print(
-                    f"📌 Data extracted: {nk, country, name, number_of_player, matches_played}")
+                    f"📌 Data extracted: {season, nk, country, name, number_of_player, matches_played}")
 
             except Exception as e:
                 # ✅ Log errors for debugging

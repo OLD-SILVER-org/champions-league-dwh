@@ -51,7 +51,7 @@ class MatchScraper(SeleniumScraper):
                 return None
 
             print(f"✅ Successfully fetched page for season {season}")
-            extracted_data = self.extract_match_data(match_tbody)
+            extracted_data = self.extract_match_data(match_tbody, season)
             self.save_data(extracted_data, season)
             return extracted_data
 
@@ -59,7 +59,7 @@ class MatchScraper(SeleniumScraper):
             print(f"❌ Scraping failed for season {season}: {e}")
             return None
 
-    def extract_match_data(self, match_tbody):
+    def extract_match_data(self, match_tbody, season):
         """ Extract match data from the table. """
         columns = ["Season",
                    "Round", "Week", "Day", "Date", "Time",
@@ -72,7 +72,6 @@ class MatchScraper(SeleniumScraper):
             try:
                 print(f"📌 DEBUG - Processing a row")
                 # ✅ Extract match details
-                season = self.current_season
                 round_text = row.find_element(By.TAG_NAME, "th").text
                 week = row.find_element(
                     By.CSS_SELECTOR, 'td[data-stat="gameweek"]').text
