@@ -41,7 +41,7 @@ class PlayerScraper(SeleniumScraper):
                 print(f"❌ No players data found for season {season}")
                 return None
             print(f"✅ Successfully fetched players for season {season}: ")
-            extracted_data = self.extract_player_data(player_tbody)
+            extracted_data = self.extract_player_data(player_tbody, season)
             self.save_data(extracted_data, season)
             return extracted_data
         except Exception as e:
@@ -60,12 +60,12 @@ class PlayerScraper(SeleniumScraper):
         print(f"✅ Data players saved: {data_name}")
         pass
 
-    def extract_player_data(self, player_tbody):
+    def extract_player_data(self, player_tbody, season):
         """ Extract player data from the table. """
-        columns = [
-            "Natural Key", "Name", "Nation", "Positions",
-            "Squad_ID", "Squad", "Born"
-        ]
+        columns = ["Season",
+                   "Natural Key", "Name", "Nation", "Positions",
+                   "Squad_ID", "Squad", "Born"
+                   ]
         data = []  # Store extracted data as a list
         rows = player_tbody.find_elements(By.TAG_NAME, "tr")
         for row in rows:
@@ -94,7 +94,7 @@ class PlayerScraper(SeleniumScraper):
 
                 # Append row data to list
                 data.append(
-                    [nk, name, nation, positions, squad_id, squad, born])
+                    [season, nk, name, nation, positions, squad_id, squad, born])
             except Exception as e:
                 print(f"❌ Error processing row: {e}")
         # Convert list to DataFrame once (better performance)
