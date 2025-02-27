@@ -22,6 +22,7 @@ nên hệ thống sẽ dễ dàng lấy file mà không gọi metadata từng fi
 :D tự dung thấy mình càng nghĩ càng thiết kế đúng và thực tiễn :D
 h chỉ cần liên kết các biến env tạo thành path và lọc nữa là ok.
 
+nhận ra không thể để get current season trng init dc, vì sẽ bị lưu cứng. nên dùng mỗi lần gọi hàm
 
 
 

@@ -1,6 +1,7 @@
 import os
 import pandas as pd
 from base_transformer import BaseTransformer
+import datetime
 
 
 class MatchTransformer(BaseTransformer):
@@ -12,19 +13,18 @@ class MatchTransformer(BaseTransformer):
     def __init__(self):
         """Initialize MatchTransformer."""
         super().__init__()
-        self.SAVE_PATH = os.getenv("SAVE_PATH")
         self.MATCHS_LOCATION = os.getenv("MATCHS_LOCATION")
 
     def transform_old_data(self):
         """Transform historical data from past seasons"""
         pass
 
-    def transform_data(self, input_path: str, output_path: str):
+    def transform_data(self, season: str):
         """Run the entire transformation pipeline from extraction to storage."""
         print("🔄 Starting data transformation pipeline...")
 
         # 1. Load raw data
-        df = self.get_extracted_data(input_path)
+        df = self.get_extracted_data(season)
         print("✅ Data loaded successfully!")
 
         # 2. Standardize schema (rename columns, fix data types, etc.)
@@ -48,14 +48,14 @@ class MatchTransformer(BaseTransformer):
         print("✅ Metrics calculated!")
 
         # 7. Validate data integrity (check for missing or incorrect values)
-        self.validate_data(df)
+        df = self.validate_data(df)
         print("✅ Data validated!")
+        print(f"{df.head()}")
 
         # 8. Save transformed data to file
-        self.save_data(df, output_path)
-        print(f"✅ Data saved to {output_path}")
-
+        df = self.save_data(df, season)
         print("🚀 Data transformation pipeline completed!")
+        return df
 
     def get_extracted_data(self, season) -> pd.DataFrame:
         """Load extracted data from CSV file."""
@@ -70,88 +70,87 @@ class MatchTransformer(BaseTransformer):
         return pd.read_csv(latest_file_path)
 
     def standardize_schema(self, df: pd.DataFrame) -> pd.DataFrame:
-        """Standardize schema: normalize datetime, data types, and column names."""
-
+        """Standardize schema and split score column into home_score and away_score."""
         # Convert column names to lowercase
         df.columns = df.columns.str.lower()
-
+        # Convert column week to int
+        df['week'] = df['week'].astype('Int64')
         # Normalize datetime
         if 'date' in df.columns and 'time' in df.columns:
-            # Extract GMT time from time column
-            if df['time'].str.contains(r'\(\d{2}:\d{2}\)', regex=True).any():
-                df['time'] = df['time'].str.extract(r'\((\d{2}:\d{2})\)')
-
-            # Fix chained assignment issue
+            df['time'] = df['time'].str.extract(r'\((\d{2}:\d{2})\)')
             df['time'] = df['time'].fillna('00:00')
-
-            # Create datetime column
             df['match_datetime'] = pd.to_datetime(
-                df['date'] + ' ' + df['time'], format='%Y-%m-%d %H:%M', errors='coerce'
-            )
-
-            # Drop old columns
+                df['date'] + ' ' + df['time'], format='%Y-%m-%d %H:%M', errors='coerce')
             df.drop(columns=['date', 'time'], inplace=True, errors='ignore')
-        # Convert attendance to integer, removing commas first
-        if 'attendance' in df.columns:
-            df['attendance'] = df['attendance'].astype(
-                str).str.replace(',', '')
-            df['attendance'] = pd.to_numeric(
-                df['attendance'], errors='coerce').astype('Int64')
-        # Standardize data types
-        type_mapping = {
-            'season': str,
-            'round': str,
-            'week': str,
-            'day': str,
-            'match_datetime': 'datetime64[ns]',
-            'home': str,
-            'xg_home': float,
-            'score': str,
-            'xg_away': float,
-            'away': str,
-            'venue': str,
-            'referee': str
-        }
 
-        for col, dtype in type_mapping.items():
-            if col in df.columns:
-                if dtype == float:
-                    df[col] = pd.to_numeric(df[col], errors='coerce')
-                else:
-                    df[col] = df[col].astype(dtype)
-
-        print(f"DEBUG:\n{df.head()}")
+        # Standardize score column by splitting into home_score and away_score
+        df[['home_score', 'away_score']] = df['score'].str.split(
+            '–', expand=True).astype('Int64')
+        df.drop(columns=['score'], inplace=True)
+        # Convert attendance to string and remove non-numeric characters (e.g., ',', 'k', etc.)
+        df['attendance'] = (df['attendance']
+                            .astype(str)
+                            # Keep only digits
+                            .str.replace(r'[^\d]', '', regex=True)
+                            # Replace empty strings with NaN
+                            .replace('', pd.NA)
+                            .astype('Int64'))
         return df
 
     def clean_data(self, df: pd.DataFrame) -> pd.DataFrame:
         """Remove missing values, duplicates, and handle outliers."""
+        initial_rows = len(df)
+        # 1. Remove rows with missing values in important columns
+        important_cols = ["home", "home_score",
+                          "away", "away_score", "match report"]
+        df = df.dropna(subset=important_cols)
+
+        # 2. Remove duplicate rows only if all important columns are identical
+        df = df.drop_duplicates(subset=important_cols, keep='first')
+
+        # 3. Ensure xg_home and xg_away are non-negative
+        df = df[(df["xg_home"] >= 0) & (df["xg_away"] >= 0)]
+
+        # Log total rows removed
+        final_rows = len(df)
+        removed_rows = initial_rows - final_rows
+        print(f"✅  DEBUG: Clean Done!")
+        print(f"✅ Total rows removed: {removed_rows} / {initial_rows}")
         return df
 
     def add_keys(self, df: pd.DataFrame) -> pd.DataFrame:
         """Generate primary and foreign keys for relational integrity."""
+        """Match (SQUAD AND FIXTURES) is a Fact data - > dont need add key, this will auto add when load to db Staging"""
         return df
 
     def create_relations(self):
         """Define relationships between different tables."""
-        pass
+
+        # TODO : Create relations with dim tables - Not yet!
+        return
 
     def calculate_metrics(self, df: pd.DataFrame) -> pd.DataFrame:
         """Compute additional statistics or KPIs for analysis."""
+        # TODO : Create additional statistics for analysis - Not yet!
         return df
 
     def validate_data(self, df: pd.DataFrame) -> None:
         """Perform data integrity and quality checks."""
-        pass
+        # TODO  validate data but clean do most -> not yet
+        return df
 
-    def save_data(self, df: pd.DataFrame, path: str):
+    def save_data(self, df: pd.DataFrame, season):
         """Save transformed data to a CSV file."""
-        df.to_csv(path, index=False)
+        now = datetime.datetime.now()
+        folder_path = os.path.join(
+            self.LV2_SAVE_PATH, self.MATCHS_LOCATION, str(season))
+        os.makedirs(folder_path, exist_ok=True)
+        data_name = os.path.join(
+            folder_path, f"{now.strftime('%Y-%m-%d_%H-%M-%S')}.csv")
+        df.to_csv(data_name, index=False)
+        return df
 
 
 if __name__ == "__main__":
     transfomer = MatchTransformer()
-    df = transfomer.get_extracted_data(2024)
-    sta = transfomer.standardize_schema(df)
-    print(f"Debug :\n {sta.columns}")
-    print(f"Debug :\n {sta.head()}")
-    pass
+    transfomer.transform_newest_data()
