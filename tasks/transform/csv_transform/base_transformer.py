@@ -17,6 +17,7 @@ class BaseTransformer(ABC):
         self.START_SEASON = os.getenv("START_SEASON")
         self.SQUADS_LOCATION = os.getenv("SQUADS_LOCATION")
         self.PLAYERS_LOCATION = os.getenv("PLAYERS_LOCATION")
+        self.MATCH_DETAILS_LOCATION = os.getenv("MATCH_DETAILS_LOCATION")
         self.transform_old_data()
 
     def get_current_season(self):
