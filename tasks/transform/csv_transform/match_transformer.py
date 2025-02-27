@@ -14,6 +14,7 @@ class MatchTransformer(BaseTransformer):
         """Initialize MatchTransformer."""
         super().__init__()
         self.MATCHS_LOCATION = os.getenv("MATCHS_LOCATION")
+        self.transform_old_data()
 
     def transform_old_data(self):
         """Transform historical data from past seasons"""
@@ -101,7 +102,7 @@ class MatchTransformer(BaseTransformer):
         """Remove missing values, duplicates, and handle outliers."""
         initial_rows = len(df)
         # 1. Remove rows with missing values in important columns
-        important_cols = ["home", "home_score",
+        important_cols = ["season", "home", "home_score",
                           "away", "away_score", "match report"]
         df = df.dropna(subset=important_cols)
 
