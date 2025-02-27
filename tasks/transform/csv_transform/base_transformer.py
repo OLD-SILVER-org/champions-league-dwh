@@ -15,7 +15,8 @@ class BaseTransformer(ABC):
         self.SAVE_PATH = os.getenv("SAVE_PATH")
         self.LV2_SAVE_PATH = os.getenv("LV2_SAVE_PATH")
         self.START_SEASON = os.getenv("START_SEASON")
-        # self.transform_old_data()
+        self.SQUADS_LOCATION = os.getenv("SQUADS_LOCATION")
+        self.transform_old_data()
 
     def get_current_season(self):
         """ Determine the current football season. """
@@ -32,7 +33,7 @@ class BaseTransformer(ABC):
     def transform_old_data(self):
         """Transform historical data from past seasons"""
         list_old_seasons = list(
-            range(self.START_SEASON, self.get_current_season()))
+            range(int(self.START_SEASON), int(self.get_current_season())))
         for season in list_old_seasons:
             self.transform_data(season)
         pass

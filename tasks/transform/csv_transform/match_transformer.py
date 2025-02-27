@@ -16,10 +16,6 @@ class MatchTransformer(BaseTransformer):
         self.MATCHS_LOCATION = os.getenv("MATCHS_LOCATION")
         self.transform_old_data()
 
-    def transform_old_data(self):
-        """Transform historical data from past seasons"""
-        pass
-
     def transform_data(self, season: str):
         """Run the entire transformation pipeline from extraction to storage."""
         print("🔄 Starting data transformation pipeline...")
