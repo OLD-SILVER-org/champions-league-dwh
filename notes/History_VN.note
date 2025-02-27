@@ -24,6 +24,9 @@ h chỉ cần liên kết các biến env tạo thành path và lọc nữa là 
 
 nhận ra không thể để get current season trng init dc, vì sẽ bị lưu cứng. nên dùng mỗi lần gọi hàm
 
+self.MATCH_DETAILS_LOCATION = os.getenv("MATCH_DETAILS_LOCATION") và các hằng số tương tự bị 
+vấn đề gì đó không nhận dc giá trị khi chúng ở phía con, đành phải đưa hết qua base tuy nhiên
+vậy thì hợp bị cứng.
 
 
 
