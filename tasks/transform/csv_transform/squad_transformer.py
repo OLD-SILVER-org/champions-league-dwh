@@ -76,7 +76,11 @@ class SquadTransfomer(BaseTransformer):
             df['name'] = df['name'].str.strip()
 
         # Convert number_of_player and matches_played to integer
-        for col in ['number of player', 'matches played']:
+        df.rename(columns={
+            "number of player": "number_of_player",
+            "matches played": "matches_played"
+        }, inplace=True)
+        for col in ['number_of_player', 'matches_played']:
             if col in df.columns:
                 df[col] = pd.to_numeric(
                     df[col], errors='coerce').astype('Int64')
