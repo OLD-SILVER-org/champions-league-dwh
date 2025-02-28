@@ -13,9 +13,9 @@ class MatchLoader(NeonLoader):
         path = self.get_transformed_path(season)
         print(
             f"🔄 DEBUG : newest file in {path} \n load to table : {self.MATCHS_LOCATION} ")
-        columns = ["season", "round", "week", "day", "home", "away", "xg_home", "xg_away",
-                   "home_score", "away_score", "attendance", "venue", "referee", "match_report", "match_datetime"]
-
+        columns = ['season', 'round', 'week', 'day', 'home', 'xg_home', 'xg_away',
+                   'away', 'attendance', 'venue', 'referee', 'match_report',
+                   'match_datetime', 'home_score', 'away_score']
         self.load_csv(path, self.TABLE_SCORES_FIXTURES, columns=columns)
         print(
             f"✅  DEBUG : Load Done ")
@@ -36,5 +36,5 @@ class MatchLoader(NeonLoader):
 
 
 if __name__ == "__main__":
-    # ml = MatchLoader()
-    # ld = ml.load_newest_data()
+    ml = MatchLoader()
+    ld = ml.load_newest_data()

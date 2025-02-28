@@ -56,7 +56,7 @@ class NeonLoader(ABC):
 
             with open(file_path, 'r', encoding='utf-8') as file:
                 cursor.copy_expert(
-                    f"COPY {table_name} ({', '.join(columns)}) FROM STDIN WITH CSV HEADER", file
+                    f"COPY {table_name} ({', '.join(columns)}) FROM STDIN WITH CSV HEADER DELIMITER ','", file
                 )
 
             conn.commit()

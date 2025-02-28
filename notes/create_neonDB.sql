@@ -1,18 +1,17 @@
 CREATE TABLE scores_and_fixtures (
-    id SERIAL PRIMARY KEY,
-    season INT NOT NULL,
+    season INT,
     round TEXT,
-    week FLOAT,  -- Vì trong CSV `week` có thể chứa giá trị float (hoặc NULL)
+    week FLOAT,
     day TEXT,
-    home TEXT NOT NULL,
-    away TEXT NOT NULL,
+    home TEXT,
     xg_home FLOAT,
     xg_away FLOAT,
-    home_score INT,
-    away_score INT,
+    away TEXT,
     attendance INT,
     venue TEXT,
     referee TEXT,
     match_report TEXT,
-    match_datetime TIMESTAMP
+    match_datetime TIMESTAMP,
+    home_score INT,
+    away_score INT
 );
