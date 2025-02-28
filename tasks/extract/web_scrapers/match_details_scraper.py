@@ -139,6 +139,6 @@ class MatchDetailsScraper(SeleniumScraper):
 
 # ✅ Test
 if __name__ == "__main__":
-    scraper = MatchDetailsScraper(match_id="615d637e")
+    scraper = MatchDetailsScraper(match_id="19789895")
     scraper.scrape_data()
     # scraper.quit()  # Close Selenium WebDriver after scraping
