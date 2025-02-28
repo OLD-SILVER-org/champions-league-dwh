@@ -24,3 +24,26 @@ CREATE TABLE squads (
     number_of_player INTEGER,
     matches_played INTEGER
 );
+CREATE TABLE players (
+    id SERIAL PRIMARY KEY,
+    season INTEGER,
+    nk TEXT,
+    name TEXT,
+    nation TEXT,
+    positions TEXT,
+    squad_id TEXT,
+    squad TEXT,
+    born INTEGER
+);
+CREATE TABLE match_details (
+    id SERIAL PRIMARY KEY,
+    match_id INTEGER,
+    player_id TEXT,
+    shirt_number INTEGER,
+    team_id TEXT,
+    goals INTEGER,
+    own_goals INTEGER,
+    yellow_cards INTEGER,
+    red_card INTEGER,
+    bench BOOLEAN
+);
