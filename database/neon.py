@@ -1,48 +1,56 @@
 import os
-import psycopg2
+import pandas as pd
+from sqlalchemy import create_engine
 from dotenv import load_dotenv
 
 load_dotenv()
 
 
 class NeonStagingDB:
-    """Manage connection to Neon PostgreSQL (Staging DB)"""
+    """Manage connection to Neon PostgreSQL (Staging DB) using SQLAlchemy"""
 
     def __init__(self):
         self.db_url = os.getenv("NEON_URL")
-        self.conn = None
+        self.engine = None
 
     def connect(self):
         """Establish connection"""
-        if not self.conn:
+        if self.engine is None:
             try:
-                self.conn = psycopg2.connect(self.db_url)
+                self.engine = create_engine(self.db_url)
                 print("✅ Connected to Neon PostgreSQL")
             except Exception as e:
                 print(f"❌ Connection failed: {e}")
 
-    def execute_query(self, query, params=None, fetch=True):
-        """Execute a SQL query"""
-        if not self.conn:
+    def load_data(self, df, table_name):
+        """Load Pandas DataFrame into Neon PostgreSQL table using SQLAlchemy"""
+        if self.engine is None:
             self.connect()
         try:
-            with self.conn.cursor() as cursor:
-                cursor.execute(query, params)
-                return cursor.fetchall() if fetch else None
+            df.to_sql(table_name, self.engine, if_exists="append", index=False)
+            print(f"✅ Loaded {len(df)} records into {table_name}")
         except Exception as e:
-            print(f"❌ Query error: {e}")
-            return None
+            print(f"❌ Error loading data into {table_name}: {e}")
 
     def close(self):
         """Close database connection"""
-        if self.conn:
-            self.conn.close()
-            self.conn = None
+        if self.engine is not None:
+            self.engine.dispose()
+            self.engine = None
             print("🔌 Connection closed.")
 
 
+# Example usage
 if __name__ == "__main__":
     staging = NeonStagingDB()
     staging.connect()
+
+    # Load players.csv
+    df_players = pd.read_csv("players.csv")
+    staging.load_data(df_players, "players")
+
+    # Load squads.csv
+    df_squads = pd.read_csv("squads.csv")
+    staging.load_data(df_squads, "squads")
+
     staging.close()
-    pass
