@@ -68,6 +68,10 @@ class PlayerTransfomer(BaseTransformer):
 
         # Rename 'Natural Key' column to 'nk'
         df = df.rename(columns={"natural key": "nk"})
+        df.rename(columns={
+            "number of player": "number_of_player",
+            "matches played": "matches_played"
+        }, inplace=True)
 
         # Standardize nation (take last word and uppercase)
         if 'nation' in df.columns:
