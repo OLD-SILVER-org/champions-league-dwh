@@ -15,3 +15,12 @@ CREATE TABLE scores_and_fixtures (
     home_score INT,
     away_score INT
 );
+CREATE TABLE squads (
+    id SERIAL PRIMARY KEY,
+    season INTEGER,
+    nk TEXT,
+    country TEXT,
+    name TEXT,
+    number_of_player INTEGER,
+    matches_played INTEGER
+);
