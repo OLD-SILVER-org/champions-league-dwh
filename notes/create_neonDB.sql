@@ -1,51 +1,18 @@
-CREATE TABLE match_details (
-    match_id TEXT,
-    season TEXT,
-    player_id TEXT,
-    shirt_number INT,
-    team_id TEXT,
-    goals INT,
-    own_goals INT,
-    yellow_cards INT,
-    red_card INT,
-    bench BOOLEAN
-);
-
-CREATE TABLE players (
-    player_id TEXT,
-    season TEXT,
-    name TEXT,
-    nation TEXT,
-    positions TEXT,
-    squad_id TEXT,
-    squad TEXT,
-    born INT
-);
-
 CREATE TABLE scores_and_fixtures (
-    id SERIAL,  -- ID tự tăng, không đặt PRIMARY KEY
-    match_id TEXT,
-    season TEXT,
+    id SERIAL PRIMARY KEY,
+    season INT NOT NULL,
     round TEXT,
-    week INT,
+    week FLOAT,  -- Vì trong CSV `week` có thể chứa giá trị float (hoặc NULL)
     day TEXT,
-    date DATE,
-    home TEXT,
+    home TEXT NOT NULL,
+    away TEXT NOT NULL,
     xg_home FLOAT,
-    score TEXT,
     xg_away FLOAT,
-    away TEXT,
-    attendance TEXT,
+    home_score INT,
+    away_score INT,
+    attendance INT,
     venue TEXT,
     referee TEXT,
-    match_report TEXT
-);
-
-CREATE TABLE squads (
-    squad_id TEXT,
-    season TEXT,
-    country TEXT,
-    name TEXT,
-    num_players INT,
-    matches_played INT
+    match_report TEXT,
+    match_datetime TIMESTAMP
 );
