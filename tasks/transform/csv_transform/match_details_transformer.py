@@ -5,18 +5,20 @@ import datetime
 
 
 class MatchDetailsTransfomer(BaseTransformer):
-    def __init__(self):
+    def __init__(self, match_id=0):
         """Initialize MatchDetailsTransfomer."""
         super().__init__()
         self.MATCH_DETAILS_LOCATION = os.getenv("MATCH_DETAILS_LOCATION")
+        self.match_id = match_id
         # MatchDetailsTransfomer dont load old season case fbref dont have!
 
-    def transform_data(self, season: str):
+    def transform_data(self, match_id: str):
+        self.match_id = match_id
         """Run the entire transformation pipeline from extraction to storage."""
         print("🔄 Starting data transformation pipeline...")
 
         # 1. Load raw data
-        df = self.get_extracted_data(season)
+        df = self.get_extracted_data(self.match_id)
         print("✅ Data loaded successfully!")
 
         # 2. Standardize schema (rename columns, fix data types, etc.)
@@ -45,14 +47,14 @@ class MatchDetailsTransfomer(BaseTransformer):
         print(f"{df.head()}")
 
         # 8. Save transformed data to file
-        df = self.save_data(df, season)
+        df = self.save_data(df, self.match_id)
         print("🚀 Data transformation pipeline completed!")
         return df
 
-    def get_extracted_data(self, season) -> pd.DataFrame:
+    def get_extracted_data(self, match_id) -> pd.DataFrame:
         """Load extracted data from CSV file."""
         path = os.path.join(
-            self.SAVE_PATH, self.PLAYERS_LOCATION, str(season))
+            self.SAVE_PATH, self.MATCH_DETAILS_LOCATION, str(match_id))
         files = [f for f in os.listdir(path) if f.endswith(".csv")]
         if not files:
             return None  # No files found
@@ -122,11 +124,11 @@ class MatchDetailsTransfomer(BaseTransformer):
         """Clean method do the most -> do nothing"""
         return df
 
-    def save_data(self, df: pd.DataFrame, season):
+    def save_data(self, df: pd.DataFrame, match_id):
         """Save transformed data to a CSV file."""
         now = datetime.datetime.now()
         folder_path = os.path.join(
-            self.LV2_SAVE_PATH, self.MATCH_DETAILS_LOCATION, str(season))
+            self.LV2_SAVE_PATH, self.MATCH_DETAILS_LOCATION, str(match_id))
         os.makedirs(folder_path, exist_ok=True)
         data_name = os.path.join(
             folder_path, f"{now.strftime('%Y-%m-%d_%H-%M-%S')}.csv")
@@ -135,6 +137,6 @@ class MatchDetailsTransfomer(BaseTransformer):
 
 
 if __name__ == "__main__":
-    transfomer = MatchDetailsTransfomer()
-    df = transfomer.transform_newest_data()
+    transfomer = MatchDetailsTransfomer("19789895")
+    df = transfomer.transform_data("19789895")
     print(f"{df.head}")
