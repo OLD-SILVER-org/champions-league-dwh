@@ -28,6 +28,11 @@ self.MATCH_DETAILS_LOCATION = os.getenv("MATCH_DETAILS_LOCATION") và các hằn
 vấn đề gì đó không nhận dc giá trị khi chúng ở phía con, đành phải đưa hết qua base tuy nhiên
 vậy thì hợp bị cứng.
 tạm thời sẽ đánh dấu và để nó phân nhánh trong git để fix bug sau.
+Mình mất gần cả ngày để nhận ra ình tọa cratte thứ tự sai nên load lên lỗi hoài. 
+cuối ngày xũng cong tuy nhiê phần lỗi vân còn chút thiếu sót như chưa load dữ liệu cũ vì như vạy khi debug lâu lắm, 
+mình cũng hiểu cách load dữ liệu xũ nê tạm thời bỏ quacòn vụ .env hôm trước vẫn để đấy
+à, hôm nay gặp vụ không nhận path của neon.py nên buộc ình đưa nó vào load luôn, hơi kỳ nhưng tạm thời vậy đi
+
 
 
 
