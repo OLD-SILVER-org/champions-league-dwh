@@ -14,7 +14,7 @@ class MatchTransformer(BaseTransformer):
         """Initialize MatchTransformer."""
         super().__init__()
         self.MATCHS_LOCATION = os.getenv("MATCHS_LOCATION")
-        self.transform_old_data()
+        # self.transform_old_data()
 
     def transform_data(self, season: str):
         """Run the entire transformation pipeline from extraction to storage."""
@@ -79,6 +79,10 @@ class MatchTransformer(BaseTransformer):
             df['match_datetime'] = pd.to_datetime(
                 df['date'] + ' ' + df['time'], format='%Y-%m-%d %H:%M', errors='coerce')
             df.drop(columns=['date', 'time'], inplace=True, errors='ignore')
+        # Normalize "home" and "away" columns (remove country prefix)
+        # Example: "eng Aston Villa" → "Aston Villa"
+        df["home"] = df["home"].str.replace(r"\s[a-z]{2,3}$", "", regex=True)
+        df["away"] = df["away"].str.replace(r"^[a-z]{2,3}\s", "", regex=True)
 
         # Standardize score column by splitting into home_score and away_score
         df[['home_score', 'away_score']] = df['score'].str.split(
@@ -95,24 +99,38 @@ class MatchTransformer(BaseTransformer):
         return df
 
     def clean_data(self, df: pd.DataFrame) -> pd.DataFrame:
-        """Remove missing values, duplicates, and handle outliers."""
+        """Clean and standardize dataset before loading into DB."""
         initial_rows = len(df)
-        # 1. Remove rows with missing values in important columns
+
+        # 1. Rename columns to match database schema
+        column_mapping = {
+            "match report": "match_report"
+        }
+        df.rename(columns=column_mapping, inplace=True)
+
+        # 2. Drop rows with missing values in important columns
         important_cols = ["season", "home", "home_score",
-                          "away", "away_score", "match report"]
+                          "away", "away_score", "match_report"]
         df = df.dropna(subset=important_cols)
 
-        # 2. Remove duplicate rows only if all important columns are identical
-        df = df.drop_duplicates(subset=important_cols, keep='first')
+        # 3. Convert data types
+        df["season"] = pd.to_numeric(
+            df["season"], errors="coerce").astype("Int64")
+        df["week"] = pd.to_numeric(
+            df["week"], errors="coerce").astype("Float64")
 
-        # 3. Ensure xg_home and xg_away are non-negative
+        # 4. Remove duplicate rows (keeping the first occurrence)
+        df = df.drop_duplicates(subset=important_cols, keep="first")
+
+        # 5. Ensure numeric values are valid
         df = df[(df["xg_home"] >= 0) & (df["xg_away"] >= 0)]
 
         # Log total rows removed
         final_rows = len(df)
         removed_rows = initial_rows - final_rows
-        print(f"✅  DEBUG: Clean Done!")
+        print(f"✅ DEBUG: Clean Done!")
         print(f"✅ Total rows removed: {removed_rows} / {initial_rows}")
+
         return df
 
     def add_keys(self, df: pd.DataFrame) -> pd.DataFrame:
