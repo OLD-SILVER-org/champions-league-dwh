@@ -42,6 +42,7 @@ class MatchScraper(SeleniumScraper):
 
         try:
             self.get(url)  # Open URL using SeleniumScraper
+            self.close_cookie_banner()
             # Find the match data table
             match_tbody = self.find_element(
                 By.CLASS_NAME, "stats_table").find_element(By.TAG_NAME, "tbody")
@@ -56,7 +57,7 @@ class MatchScraper(SeleniumScraper):
             return extracted_data
 
         except Exception as e:
-            print(f"❌ Scraping failed for season {season}: {e}")
+            print(f"❌ Scraping failed for season {season}")
             return None
 
     def extract_match_data(self, match_tbody, season):
@@ -70,7 +71,6 @@ class MatchScraper(SeleniumScraper):
         rows = match_tbody.find_elements(By.TAG_NAME, "tr")
         for row in rows:
             try:
-                print(f"📌 DEBUG - Processing a row")
                 # ✅ Extract match details
                 round_text = row.find_element(By.TAG_NAME, "th").text
                 week = row.find_element(
@@ -83,12 +83,13 @@ class MatchScraper(SeleniumScraper):
                     By.CSS_SELECTOR, 'td[data-stat="start_time"]').text
                 home = row.find_element(
                     By.CSS_SELECTOR, 'td[data-stat="home_team"]').text
-                xG_Home = row.find_element(
-                    By.CSS_SELECTOR, 'td[data-stat="home_xg"]').text
                 score = row.find_element(
                     By.CSS_SELECTOR, 'td[data-stat="score"]').text
-                xG_Away = row.find_element(
-                    By.CSS_SELECTOR, 'td[data-stat="away_xg"]').text
+                xG_Home_element = row.find_elements(By.CSS_SELECTOR, 'td[data-stat="home_xg"]')
+                xG_Home = xG_Home_element[0].text if xG_Home_element else "" 
+
+                xG_Away_element = row.find_elements(By.CSS_SELECTOR, 'td[data-stat="away_xg"]')
+                xG_Away = xG_Away_element[0].text if xG_Away_element else ""
                 away = row.find_element(
                     By.CSS_SELECTOR, 'td[data-stat="away_team"]').text
                 attendance = row.find_element(
@@ -97,6 +98,7 @@ class MatchScraper(SeleniumScraper):
                     By.CSS_SELECTOR, 'td[data-stat="venue"]').text
                 referee = row.find_element(
                     By.CSS_SELECTOR, 'td[data-stat="referee"]').text
+                print(f"✅ DEBUG : DONE 1")
                 # ✅ Extract match report ID
                 match_report = ""
                 match_td = row.find_elements(
@@ -108,11 +110,13 @@ class MatchScraper(SeleniumScraper):
                         r'/matches/([a-zA-Z0-9]+)/', match_href)
                     match_report = match_report.group(
                         1) if match_report else ""
+                print(f"✅ DEBUG : DONE 2")
                 # ✅ Append to list
                 df_list.append([season,
                                 round_text, week, day, date, time, home, xG_Home, score,
                                 xG_Away, away, attendance, venue, referee, match_report
                                 ])
+                print(f"✅ DEBUG : DONE 3")
             except Exception as e:
                 print(f"❌ Error processing row: {e}")
                 continue
