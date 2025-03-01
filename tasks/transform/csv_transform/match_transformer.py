@@ -23,7 +23,6 @@ class MatchTransformer(BaseTransformer):
 
         # 1. Load raw data
         df = self.get_extracted_data(season)
-        print(f"{df.head(10)}")
         print("✅ Data loaded successfully!")
 
         # 2. Standardize schema (rename columns, fix data types, etc.)
@@ -73,6 +72,9 @@ class MatchTransformer(BaseTransformer):
         """Standardize schema and split score column into home_score and away_score."""
         # Convert column names to lowercase
         df.columns = df.columns.str.lower()
+        print(f"{df.columns}")
+        print(f"{df['date'].head(10)}")
+
         # Convert column week to int
         df['week'] = df['week'].astype('Int64')
         # Normalize datetime

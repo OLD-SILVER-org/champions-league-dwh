@@ -34,6 +34,8 @@ mình cũng hiểu cách load dữ liệu xũ nê tạm thời bỏ quacòn vụ
 à, hôm nay gặp vụ không nhận path của neon.py nên buộc ình đưa nó vào load luôn, hơi kỳ nhưng tạm thời vậy đi
 
 01/03/25 ; tìm ra lỗi tại sao không tìm dc databse r, do vscode tự động sắp xếp lại đưa import lên trên, làm config path phía sau vô dụng. 
-
+có lõi chổ scrap, do các năm cũ không có sg_home hay xg_away nên lỗi , từ mùa 17-18 mới có
+vào sâu trong mới thấy các dữ liêu cuarc các năm cũ rất là tào lao, có thể có, có thể không.
+ nó ổn định vào năm 2020
 
 
