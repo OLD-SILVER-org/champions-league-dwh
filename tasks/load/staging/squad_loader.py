@@ -7,7 +7,7 @@ class SquadLoader(NeonLoader):
         super().__init__()
         self.SQUADS_LOCATION = str(
             os.getenv("SQUADS_LOCATION")).upper()
-
+        self.TABLE_SQUADS = os.getenv("TABLE_SQUADS")
     def load_data(self, season):
         """Main transform pipeline"""
         path = self.get_transformed_path(season)

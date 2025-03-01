@@ -7,6 +7,7 @@ class PlayerLoader(NeonLoader):
         super().__init__()
         self.PLAYERS_LOCATION = str(
             os.getenv("PLAYERS_LOCATION")).upper()
+        self.TABLE_PLAYERS = os.getenv("TABLE_PLAYERS")
 
     def load_data(self, season):
         """Main transform pipeline"""

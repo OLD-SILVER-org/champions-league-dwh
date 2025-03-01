@@ -7,6 +7,7 @@ class MatchDetails(NeonLoader):
         super().__init__()
         self.MATCH_DETAILS_LOCATION = str(
             os.getenv("MATCH_DETAILS_LOCATION")).upper()
+        self.TABLE_MATCH_DETAILS = os.getenv("TABLE_MATCH_DETAILS")
         self.match_id = match_id
 
     def load_newest_data(self):

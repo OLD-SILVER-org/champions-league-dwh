@@ -7,6 +7,8 @@ class MatchLoader(NeonLoader):
         super().__init__()
         self.MATCHS_LOCATION = str(
             os.getenv("MATCHS_LOCATION")).upper()
+        self.TABLE_SCORES_FIXTURES = os.getenv("TABLE_SCORES_FIXTURES")
+
 
     def load_data(self, season):
         """Main transform pipeline"""
