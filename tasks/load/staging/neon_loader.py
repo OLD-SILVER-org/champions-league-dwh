@@ -1,11 +1,12 @@
-from neon import NeonStagingDB as db
 import sys
 import os
 from dotenv import load_dotenv
 import datetime
 import pandas as pd
 from abc import ABC, abstractmethod
-
+database_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', '..', 'database'))
+sys.path.append(database_path) 
+from neon import NeonStagingDB as db
 load_dotenv()
 
 
