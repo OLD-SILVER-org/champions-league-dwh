@@ -33,6 +33,7 @@ cuối ngày xũng cong tuy nhiê phần lỗi vân còn chút thiếu sót như
 mình cũng hiểu cách load dữ liệu xũ nê tạm thời bỏ quacòn vụ .env hôm trước vẫn để đấy
 à, hôm nay gặp vụ không nhận path của neon.py nên buộc ình đưa nó vào load luôn, hơi kỳ nhưng tạm thời vậy đi
 
+01/03/25 ; tìm ra lỗi tại sao không tìm dc databse r, do vscode tự động sắp xếp lại đưa import lên trên, làm config path phía sau vô dụng. 
 
 
 
