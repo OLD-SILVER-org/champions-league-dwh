@@ -98,7 +98,6 @@ class MatchScraper(SeleniumScraper):
                     By.CSS_SELECTOR, 'td[data-stat="venue"]').text
                 referee = row.find_element(
                     By.CSS_SELECTOR, 'td[data-stat="referee"]').text
-                print(f"✅ DEBUG : DONE 1")
                 # ✅ Extract match report ID
                 match_report = ""
                 match_td = row.find_elements(
@@ -110,13 +109,11 @@ class MatchScraper(SeleniumScraper):
                         r'/matches/([a-zA-Z0-9]+)/', match_href)
                     match_report = match_report.group(
                         1) if match_report else ""
-                print(f"✅ DEBUG : DONE 2")
                 # ✅ Append to list
                 df_list.append([season,
                                 round_text, week, day, date, time, home, xG_Home, score,
                                 xG_Away, away, attendance, venue, referee, match_report
                                 ])
-                print(f"✅ DEBUG : DONE 3")
             except Exception as e:
                 print(f"❌ Error processing row: {e}")
                 continue
