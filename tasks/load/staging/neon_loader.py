@@ -16,15 +16,6 @@ class NeonLoader(ABC):
     def __init__(self):
         self.LV2_SAVE_PATH = os.getenv("LV2_SAVE_PATH")
         self.START_SEASON = os.getenv("START_SEASON")
-        #self.SQUADS_LOCATION = os.getenv("SQUADS_LOCATION")
-        #self.PLAYERS_LOCATION = os.getenv("PLAYERS_LOCATION")
-        #self.MATCH_DETAILS_LOCATION = os.getenv("MATCH_DETAILS_LOCATION")
-        # self.SCORES_FIXTURES_LOCATION = os.getenv("MATCHS_LOCATION")
-        # Neon Table names
-        #self.TABLE_PLAYERS = os.getenv("TABLE_PLAYERS")
-        #self.TABLE_SQUADS = os.getenv("TABLE_SQUADS")
-        #self.TABLE_MATCH_DETAILS = os.getenv("TABLE_MATCH_DETAILS")
-        #self.TABLE_SCORES_FIXTURES = os.getenv("TABLE_SCORES_FIXTURES")
         # connect to Neon
         self.db = db()
         self.db.connect()
