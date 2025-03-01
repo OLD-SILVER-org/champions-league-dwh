@@ -13,12 +13,24 @@ class MatchDetailsScraper(SeleniumScraper):
         """ Initialize SeleniumScraper and load environment variables. """
         super().__init__(headless=True, wait_time=1)
         self.MATCH_DETAILS_LOCATION = os.getenv("MATCH_DETAILS_LOCATION")
+        self.MATCHS_LOCATION = os.getenv("MATCHS_LOCATION")
         self.match_id = match_id
+        self.MATCH_ID_DETAILS_LOCATION = os.getenv("MATCH_ID_DETAILS_LOCATION")
+        self.LV2_SAVE_PATH = os.getenv("LV2_SAVE_PATH")
+        self.get_old_seasons_data()
 
     def get_match_link(self):
         """ Generate the FBref URL for the match. """
         return f"https://fbref.com/en/matches/{self.match_id}"
 
+    def get_current_season_data(self):
+        list_match_ids = self.get_list_match_by_season(self.get_current_season())
+        for match_id in list_match_ids:
+            self.match_id = match_id
+            self.scrape_data()
+        pass
+        
+    
     def scrape_data(self):
         """ Scrape match data and save to CSV. """
         url = self.get_match_link()
@@ -52,6 +64,7 @@ class MatchDetailsScraper(SeleniumScraper):
         except Exception as e:
             print(f"❌ Scraping failed for match {self.match_id}: {e}")
             return None
+        return
 
     def get_team_ids(self):
         """ Get the teams' IDs from the match page. """
@@ -132,7 +145,48 @@ class MatchDetailsScraper(SeleniumScraper):
 
         # Convert list to DataFrame once
         return pd.DataFrame(player_list, columns=columns)
+    
+    def get_old_seasons_data(self):
+        """Retrieve match IDs from past seasons and process them"""
 
+        # Get the current season
+        cur_season = self.get_current_season()
+
+        # List all past seasons
+        list_old_seasons = list(range(self.START_SEASON, cur_season))
+
+        # Step 1: Collect all match IDs from past seasons
+        all_match_ids = []
+        for season in list_old_seasons:
+            match_ids = self.get_list_match_by_season(season)
+            if match_ids:
+                all_match_ids.extend(match_ids)
+
+        # Step 2: Process each match ID
+        all_match_details = []
+        for match_id in all_match_ids:
+            self.match_id = match_id
+            self.scrape_data()
+
+        return all_match_details 
+
+    def get_list_match_by_season(self, season):
+        """Load transformed data from file"""
+        path = os.path.join(
+            self.LV2_SAVE_PATH, self.MATCHS_LOCATION, str(season), self.MATCH_ID_DETAILS_LOCATION)
+        if not os.path.exists(path):
+            print(f"⚠️ WARNING: Directory {path} does not exist!")
+        files = [f for f in os.listdir(path) if f.endswith(".csv")]
+        if not files:
+            return None  # No files found
+        latest_file = sorted(files, reverse=True)[0]
+        latest_file_path = os.path.join(path, latest_file)
+        # Read CSV and return DataFrame
+        df = pd.read_csv(latest_file_path)
+        match_ids = df["match_id"].tolist()
+        return match_ids
+
+    
     def get_season_link(self, season):
         return super().get_season_link(season)
 
@@ -140,5 +194,5 @@ class MatchDetailsScraper(SeleniumScraper):
 # ✅ Test
 if __name__ == "__main__":
     scraper = MatchDetailsScraper(match_id="19789895")
-    scraper.scrape_data()
+    scraper.get_current_season_data()
     # scraper.quit()  # Close Selenium WebDriver after scraping

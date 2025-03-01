@@ -14,7 +14,8 @@ class MatchTransformer(BaseTransformer):
         """Initialize MatchTransformer."""
         super().__init__()
         self.MATCHS_LOCATION = os.getenv("MATCHS_LOCATION")
-        # self.transform_old_data()
+        self.MATCH_ID_DETAILS_LOCATION =  str(os.getenv("MATCH_ID_DETAILS_LOCATION"))
+        self.transform_old_data()
 
     def transform_data(self, season: str):
         """Run the entire transformation pipeline from extraction to storage."""
@@ -22,6 +23,7 @@ class MatchTransformer(BaseTransformer):
 
         # 1. Load raw data
         df = self.get_extracted_data(season)
+        print(f"{df.head(10)}")
         print("✅ Data loaded successfully!")
 
         # 2. Standardize schema (rename columns, fix data types, etc.)
@@ -64,6 +66,7 @@ class MatchTransformer(BaseTransformer):
         latest_file = sorted(files, reverse=True)[0]
         latest_file_path = os.path.join(path, latest_file)
         # Read CSV and return DataFrame
+        print(f"✅ DEBUG : path {latest_file_path}")
         return pd.read_csv(latest_file_path)
 
     def standardize_schema(self, df: pd.DataFrame) -> pd.DataFrame:
@@ -149,7 +152,7 @@ class MatchTransformer(BaseTransformer):
         # TODO : Create additional statistics for analysis - Not yet!
         return df
 
-    def validate_data(self, df: pd.DataFrame) -> None:
+    def validate_data(self, df: pd.DataFrame) -> pd.DataFrame:
         """Perform data integrity and quality checks."""
         # TODO  validate data but clean do most -> not yet
         return df
@@ -163,8 +166,20 @@ class MatchTransformer(BaseTransformer):
         data_name = os.path.join(
             folder_path, f"{now.strftime('%Y-%m-%d_%H-%M-%S')}.csv")
         df.to_csv(data_name, index=False)
+        self.split_match_id(df,season)
         return df
-
+    
+    
+    def split_match_id(self,df,season):
+        """Split match id to a csv file"""
+        now = datetime.datetime.now()
+        folder_path = os.path.join(
+            self.LV2_SAVE_PATH, self.MATCHS_LOCATION, str(season), self.MATCH_ID_DETAILS_LOCATION)
+        os.makedirs(folder_path, exist_ok=True)
+        data_name = os.path.join(
+            folder_path, f"{now.strftime('%Y-%m-%d_%H-%M-%S')}.csv")
+        df[["match_report"]].rename(columns={"match_report": "match_id"}).to_csv(data_name, index=False)
+        return df
 
 if __name__ == "__main__":
     transfomer = MatchTransformer()
