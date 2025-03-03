@@ -4,6 +4,7 @@ import datetime
 import os
 import sys
 from pandas_gbq import to_gbq
+from abc import ABC, abstractmethod
 
 load_dotenv()
 
@@ -15,7 +16,7 @@ from neon import NeonStagingDB as neon
 from google_big_query import GBQ as gbq
 
 
-class BigQueryLoader:
+class BigQueryLoader(ABC):
     def __init__(self):
         self.gGBQ = gbq()
         self.source = neon()
@@ -57,9 +58,10 @@ class BigQueryLoader:
                 # get collumn from neon
                 columns = [desc[0] for desc in cursor.description]
 
-            # Chuyển thành DataFrame
+            # row to dataframe
             df = pd.DataFrame(rows, columns=columns)
             df["updated_at"] = pd.to_datetime("now")
+            cursor.close()
             return df
 
         except Exception as e:
@@ -78,11 +80,15 @@ class BigQueryLoader:
         except Exception as e:
             print(f"❌ Error uploading data: {e}")
 
+    @abstractmethod
+    def upload(self):
+        pass
+
 
 if __name__ == "__main__":
     bql = BigQueryLoader()
     table_name = os.getenv("TABLE_SQUADS")
-    print(f"Table name: {table_name}")  # Debug xem table_name có đúng không
+    print(f"Table name: {table_name}")
 
     last_update = bql.get_newest_data(table_name)
     print(last_update.head(10))
