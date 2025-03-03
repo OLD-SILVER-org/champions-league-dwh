@@ -47,3 +47,36 @@ CREATE TABLE match_details (
     red_card INTEGER,
     bench BOOLEAN
 );
+-- add column update_at
+ALTER TABLE scores_and_fixtures ADD COLUMN updated_at TIMESTAMP DEFAULT NOW();
+ALTER TABLE squads ADD COLUMN updated_at TIMESTAMP DEFAULT NOW();
+ALTER TABLE match_details ADD COLUMN updated_at TIMESTAMP DEFAULT NOW();
+ALTER TABLE players ADD COLUMN updated_at TIMESTAMP DEFAULT NOW();
+-- create functions
+CREATE OR REPLACE FUNCTION set_updated_at()
+RETURNS TRIGGER AS $$
+BEGIN
+    NEW.updated_at = NOW();
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+-- create triggers
+CREATE TRIGGER update_scores_and_fixtures
+BEFORE UPDATE ON scores_and_fixtures
+FOR EACH ROW
+EXECUTE FUNCTION set_updated_at();
+
+CREATE TRIGGER update_squads
+BEFORE UPDATE ON squads
+FOR EACH ROW
+EXECUTE FUNCTION set_updated_at();
+
+CREATE TRIGGER update_match_details
+BEFORE UPDATE ON match_details
+FOR EACH ROW
+EXECUTE FUNCTION set_updated_at();
+
+CREATE TRIGGER update_players
+BEFORE UPDATE ON players
+FOR EACH ROW
+EXECUTE FUNCTION set_updated_at();

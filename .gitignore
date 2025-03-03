@@ -34,3 +34,8 @@ Thumbs.db
 
 # Ignore Notes
 # notes/
+# Ignore Config
+./configs
+.config
+config\gcp_service_key.json
+config
