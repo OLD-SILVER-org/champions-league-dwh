@@ -1,3 +1,4 @@
+XIN CHÀO, ĐÂY LÀ NOD VIẾT RAW VỀ VIỆC LÀM CÁI PROJECT NÀY, KHÔNG CÓ CHỈNH SỬA.
 thiết kế lấy selerrium là lớp cha và có vài phương thức abstract, vì việc craw luôn gọi selerium nên như vầy là dược
 cũng dễ mở rộng sau này nếu như có thêm API hoặc craw từ 1 web khác
 
@@ -37,5 +38,14 @@ mình cũng hiểu cách load dữ liệu xũ nê tạm thời bỏ quacòn vụ
 có lõi chổ scrap, do các năm cũ không có sg_home hay xg_away nên lỗi , từ mùa 17-18 mới có
 vào sâu trong mới thấy các dữ liêu cuarc các năm cũ rất là tào lao, có thể có, có thể không.
  nó ổn định vào năm 2020
+ việc lấy dữ liệu cũ gây xung đột mạnh do scrap không scale hợp với web, đây là nhược điểm của việc cào dữ liệu nên chịu
+ muốn xử lý hết phải khá lâu nên xin phép bỏ quacacs năm không ổn định, nếu cs yêu cầu thì mình làm cũng ok.
+ load lên bigquery thì có vài cái lạ là: nó không nhận giữ liệu default, nó gọi schema là dataset, kết nối xác thực bằng 1 file json,
+ cần có gán quyền cụ thể cho hành động của người sử dụng mới dc hành động. khá kỹ càng và chặt chẽ.
+ 
+ ETL xong, load lên db xong, bây n xét lại để chụa tối, chuẩn bị cho airflow , tuy nhiên, khi tìm hiểu airflow
+ thì mình thấy mình viết hơi dư là chổ đưa load_old_data vào init của object, có thể xảy ra trùng lặp load dữ liệu hiều lần vì airflow chạy theo task vaongf lặp chư khong
+ phải cách mà ứng dụng thường chạy, deploy rồi chạy á, nên công việc bây h là tách code cũ ra và cho nó vào 1 phwuowng thức
+
 
 
