@@ -39,4 +39,5 @@ Thumbs.db
 .config
 config\gcp_service_key.json
 config
-
+# Logger
+logs.etl_process.log
