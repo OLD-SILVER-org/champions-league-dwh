@@ -48,5 +48,9 @@ vào sâu trong mới thấy các dữ liêu cuarc các năm cũ rất là tào 
  phải cách mà ứng dụng thường chạy, deploy rồi chạy á, nên công việc bây h là tách code cũ ra và cho nó vào 1 phwuowng thức
 
 TÁCH PHƯƠNG THỨC CŨ NÀO !
+gần xong nhưn chổ load to gbq bị  Could not convert DataFrame to Parquet. , chưa biết chổ nào gây ra
+Could not convert DataFrame to Parquet...... hơi lâu rồi á
+.... sau cả ngày từ nghĩ vì giống hex nên nó tự cnvert đến vân vân mây mây. tối ngủ mới nhận ra là do bản dim_player và player cũ của mình .
+player cũ có lấy theo int, còn cái mới alf stringmaf mình đi gọi cái cũ so sánh
 
 
