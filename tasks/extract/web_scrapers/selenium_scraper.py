@@ -11,17 +11,23 @@ from dotenv import load_dotenv
 import os
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from logs.logger import ETLLogger
+
+load_dotenv()
 
 
 class SeleniumScraper(ABC):
-    """ Selenium-based web scraper with configurable settings. """
-    load_dotenv()
+    """Selenium-based web scraper with configurable settings."""
 
     def __init__(self, headless=True, wait_time=5, use_fake_agent=True):
         super().__init__()
+        # Log
+        self.logger = ETLLogger().get_logger()
+        # Config
         self.config_option(headless, use_fake_agent)
         self.setup_driver(wait_time)
         self.set_constants()
+
         pass
 
     def set_constants(self):
@@ -29,8 +35,7 @@ class SeleniumScraper(ABC):
         self.SAVE_PATH = os.getenv("SAVE_PATH")
         self.START_SEASON = int(os.getenv("START_SEASON"))
         self.current_season = self.get_current_season()
-        print(f"📌 start season {self.START_SEASON}")
-        print(f"📌 current season {self.current_season}")
+        self.logger.info("📌 start selenium for season : %s", self.START_SEASON)
         pass
 
     def config_option(self, headless, use_fake_agent):
@@ -42,8 +47,7 @@ class SeleniumScraper(ABC):
         if use_fake_agent:
             self.options.add_argument(f"user-agent={UserAgent().random}")
         # Anti-bot measures
-        self.options.add_argument(
-            "--disable-blink-features=AutomationControlled")
+        self.options.add_argument("--disable-blink-features=AutomationControlled")
         self.options.add_argument("--no-sandbox")
         self.options.add_argument("--disable-dev-shm-usage")
         # Ignore certificate SSL
@@ -51,61 +55,53 @@ class SeleniumScraper(ABC):
         pass
 
     def setup_driver(self, wait_time):
-        """ Initialize WebDriver with options. """
+        """Initialize WebDriver with options."""
 
-        self.driver = webdriver.Chrome(service=Service(
-            ChromeDriverManager().install()), options=self.options)
+        self.driver = webdriver.Chrome(
+            service=Service(ChromeDriverManager().install()), options=self.options
+        )
         self.wait_time = wait_time
 
     def get_current_season(self):
-        """ Determine the current football season. """
+        """Determine the current football season."""
         current_year = datetime.datetime.now().year
         current_month = datetime.datetime.now().month
         return current_year - 1 if current_month <= 6 else current_year
 
     def get(self, url):
-        """ Open URL and wait. """
+        """Open URL and wait."""
         self.driver.get(url)
         # time.sleep(random.uniform(self.wait_time, self.wait_time + 2))
 
     def find_element(self, by, value):
-        """ Find a single element. """
+        """Find a single element."""
         return self.driver.find_element(by, value)
 
     def find_elements(self, by, value):
-        """ Find multiple elements. """
+        """Find multiple elements."""
         return self.driver.find_elements(by, value)
 
     def quit(self):
-        """ Close the WebDriver. """
+        """Close the WebDriver."""
         self.driver.quit()
 
     @abstractmethod
     def get_season_link(self, season):
-        """ Generate the FBref URL for a given season. """
+        """Generate the FBref URL for a given season."""
         pass
 
     @abstractmethod
     def scrape_data(self, season):
-        """ Abstract method to scrape data for a given season. """
+        """Abstract method to scrape data for a given season."""
         pass
 
     @abstractmethod
     def save_data(self, dataframe, season):
-        """ Abstract method to save scraped data. """
+        """Abstract method to save scraped data."""
         pass
 
-    def get_old_seasons_data(self):
-        """ Scrape historical match data from past seasons. """
-        list_old_seasons = list(
-            range(self.START_SEASON, self.current_season))
-        print(f"📌 List old seasons: {list_old_seasons}")
-        # scrape data for each season
-        for season in list_old_seasons:
-            self.scrape_data(season)
-
     def get_current_season_data(self):
-        """ Scrape the current season's match data. """
+        """Scrape the current season's match data."""
         return self.scrape_data(self.current_season)
 
     def click_button(self, by, value):
@@ -113,9 +109,10 @@ class SeleniumScraper(ABC):
         try:
             button = self.driver.find_element(by, value)
             self.driver.execute_script(
-                "arguments[0].scrollIntoView();", button)  # Scroll nhanh
+                "arguments[0].scrollIntoView();", button
+            )  # Scroll nhanh
             button.click()
-            print(f"✅ Clicked button [{value}]")
+            self.logger.info("✅ Clicked button : %s", value)
         except Exception:
             print(f"🔄 Normal click failed, trying JS click [{value}]")
             self.try_js_click(by, value)
@@ -125,17 +122,18 @@ class SeleniumScraper(ABC):
         try:
             button = self.driver.find_element(by, value)
             self.driver.execute_script("arguments[0].click();", button)
-            print(f"✅ JavaScript clicked button [{value}]")
+            self.logger.info("✅ JavaScript clicked button : %s", value)
         except Exception:
-            print(f"❌ Completely failed to click button [{value}]")
+            self.logger.error("❌ Completely failed to click button : %s", value)
 
     def close_cookie_banner(self):
         """Close the Osano cookie consent banner if it appears."""
         try:
             wait = WebDriverWait(self.driver, 1)
             accept_button = self.find_element(
-                By.CLASS_NAME, "osano-cm-button--type_accept")
+                By.CLASS_NAME, "osano-cm-button--type_accept"
+            )
             accept_button.click()
-            print("✅ Closed osano cookie consent popup")
+            self.logger.info("✅ Closed osano cookie consent popup")
         except Exception:
-            print("🔄 No cookie popup found, continuing...")
+            self.logger.info("🔄 No cookie popup found, continuing...")
