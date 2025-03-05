@@ -31,19 +31,19 @@ class SquadOldETL(BaseOldETL):
     pass
 
     def extract(self):
-        list_old_seasons = list(range(self.START_SEASON, self.current_season))
+        list_old_seasons = list(range(self.START_SEASON, self.current_season + 1))
         for season in list_old_seasons:
             self.scraper.scrape_data(season)
         pass
 
     def transform(self):
-        list_old_seasons = list(range(self.START_SEASON, self.current_season))
+        list_old_seasons = list(range(self.START_SEASON, self.current_season + 1))
         for season in list_old_seasons:
             self.transformer.transform_data(season)
         pass
 
     def load(self):
-        list_old_seasons = list(range(self.START_SEASON, self.current_season))
+        list_old_seasons = list(range(self.START_SEASON, self.current_season + 1))
         for season in list_old_seasons:
             self.loader.load_data(season)
         pass
