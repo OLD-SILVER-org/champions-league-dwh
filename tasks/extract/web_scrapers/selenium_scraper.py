@@ -35,7 +35,7 @@ class SeleniumScraper(ABC):
         self.SAVE_PATH = os.getenv("SAVE_PATH")
         self.START_SEASON = int(os.getenv("START_SEASON"))
         self.current_season = self.get_current_season()
-        self.logger.info("📌 start selenium for season : %s", self.START_SEASON)
+        self.logger.info("📌 start selenium for season : %s", self.current_season)
         pass
 
     def config_option(self, headless, use_fake_agent):
