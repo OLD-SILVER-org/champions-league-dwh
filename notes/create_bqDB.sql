@@ -23,23 +23,25 @@ CREATE TABLE `champions-league-dwh.fbref.dim_squads` (
 );
 
 CREATE TABLE `champions-league-dwh.fbref.fact_scores` (
-    id INT64,
+    id STRING,
     season INT64,
     round STRING,
     week INT64,
     day STRING,
-    home_squad_nk STRING,
+    home_squad STRING,
     xg_home_squad FLOAT64,
     xg_away_squad FLOAT64,
-    away_squad_nk STRING,
+    away_squad STRING,
     attendance INT64,
     venue STRING,
     referee STRING,
     match_nk STRING,
+    match_datetime TIMESTAMP DEFAULT CURRENT_TIMESTAMP(),
     home_score INT64,
     away_score INT64,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP()
 );
+
 
 CREATE TABLE `champions-league-dwh.fbref.fact_matches` (
     id INT64,
@@ -54,3 +56,7 @@ CREATE TABLE `champions-league-dwh.fbref.fact_matches` (
     bench INT64,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP()
 );
+-- free tire so dont have permission delter, truncate table , using another wqy:
+CREATE OR REPLACE TABLE `champions-league-dwh.fbref.fact_scoress` AS
+SELECT * FROM `champions-league-dwh.fbref.fact_scores`
+WHERE FALSE; 

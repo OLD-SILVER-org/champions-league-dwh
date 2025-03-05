@@ -52,5 +52,6 @@ gần xong nhưn chổ load to gbq bị  Could not convert DataFrame to Parquet.
 Could not convert DataFrame to Parquet...... hơi lâu rồi á
 .... sau cả ngày từ nghĩ vì giống hex nên nó tự cnvert đến vân vân mây mây. tối ngủ mới nhận ra là do bản dim_player và player cũ của mình .
 player cũ có lấy theo int, còn cái mới alf stringmaf mình đi gọi cái cũ so sánh
+player và squad cơ bản fix xong, còn match(saf) đang gặp lỗi tách điểm bị sai(transfomer) nên không load lên neon dc.
 
 
