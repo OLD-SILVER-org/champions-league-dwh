@@ -4,6 +4,7 @@ import time
 from abc import ABC, abstractmethod
 from dotenv import load_dotenv
 import datetime
+from logs.logger import ETLLogger
 
 # Load environment variables
 load_dotenv()
@@ -18,10 +19,11 @@ class BaseTransformer(ABC):
         self.SQUADS_LOCATION = os.getenv("SQUADS_LOCATION")
         self.PLAYERS_LOCATION = os.getenv("PLAYERS_LOCATION")
         self.MATCH_DETAILS_LOCATION = os.getenv("MATCH_DETAILS_LOCATION")
-        # self.transform_old_data()
+        # Log
+        self.logger = ETLLogger.get_logger()
 
     def get_current_season(self):
-        """ Determine the current football season. """
+        """Determine the current football season."""
         current_year = datetime.datetime.now().year
         current_month = datetime.datetime.now().month
         return current_year - 1 if current_month <= 6 else current_year
@@ -29,13 +31,13 @@ class BaseTransformer(ABC):
     def transform_newest_data(self):
         """Transform historical data from past seasons"""
         current_session = self.get_current_season()
-        print(f"DEBUG CURENT SEASON {current_session}")
         return self.transform_data(current_session)
 
     def transform_old_data(self):
         """Transform historical data from past seasons"""
         list_old_seasons = list(
-            range(int(self.START_SEASON), int(self.get_current_season())))
+            range(int(self.START_SEASON), int(self.get_current_season()))
+        )
         for season in list_old_seasons:
             self.transform_data(season)
         pass

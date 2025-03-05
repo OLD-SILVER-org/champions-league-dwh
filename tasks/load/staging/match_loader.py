@@ -1,33 +1,44 @@
-from neon_loader import NeonLoader
+from tasks.load.staging.neon_loader import NeonLoader
 import os
 
 
 class MatchLoader(NeonLoader):
     def __init__(self):
         super().__init__()
-        self.MATCHS_LOCATION = str(
-            os.getenv("MATCHS_LOCATION")).upper()
+        self.MATCHS_LOCATION = str(os.getenv("MATCHS_LOCATION")).upper()
         self.TABLE_SCORES_FIXTURES = os.getenv("TABLE_SCORES_FIXTURES")
-
 
     def load_data(self, season):
         """Main transform pipeline"""
         path = self.get_transformed_path(season)
-        print(
-            f"🔄 DEBUG : newest file in {path} \n load to table : {self.MATCHS_LOCATION} ")
-        columns = ['season', 'round', 'week', 'day', 'home', 'xg_home', 'xg_away',
-                   'away', 'attendance', 'venue', 'referee', 'match_report',
-                   'match_datetime', 'home_score', 'away_score']
+        self.logger.info(
+            f"🔄 DEBUG : newest file in {path} \n load to table : {self.MATCHS_LOCATION} "
+        )
+        columns = [
+            "season",
+            "round",
+            "week",
+            "day",
+            "home",
+            "xg_home",
+            "xg_away",
+            "away",
+            "attendance",
+            "venue",
+            "referee",
+            "match_report",
+            "match_datetime",
+            "home_score",
+            "away_score",
+        ]
         self.load_csv(path, self.TABLE_SCORES_FIXTURES, columns=columns)
-        print(
-            f"✅  DEBUG : Load Done ")
+        self.logger.info(f"✅ : Load Done ")
 
     def get_transformed_path(self, season):
         """Load transformed data from file"""
-        path = os.path.join(
-            self.LV2_SAVE_PATH, self.MATCHS_LOCATION, str(season))
+        path = os.path.join(self.LV2_SAVE_PATH, self.MATCHS_LOCATION, str(season))
         if not os.path.exists(path):
-            print(f"⚠️ WARNING: Directory {path} does not exist!")
+            self.logger.WARNING(f"⚠️ WARNING: Directory {path} does not exist!")
         files = [f for f in os.listdir(path) if f.endswith(".csv")]
         if not files:
             return None  # No files found
