@@ -200,21 +200,26 @@ class MatchTransformer(BaseTransformer):
 
     def split_match_id(self, df, season):
         """Split match id to a csv file"""
-        now = datetime.datetime.now()
-        folder_path = os.path.join(
-            self.LV2_SAVE_PATH,
-            self.MATCHS_LOCATION,
-            str(season),
-            self.MATCH_ID_DETAILS_LOCATION,
-        )
-        os.makedirs(folder_path, exist_ok=True)
-        data_name = os.path.join(
-            folder_path, f"{now.strftime('%Y-%m-%d_%H-%M-%S')}.csv"
-        )
-        df[["match_report"]].rename(columns={"match_report": "match_id"}).to_csv(
-            data_name, index=False
-        )
-        return df
+        try:
+            now = datetime.datetime.now()
+            folder_path = os.path.join(
+                self.LV2_SAVE_PATH,
+                self.MATCHS_LOCATION,
+                str(season),
+                self.MATCH_ID_DETAILS_LOCATION,
+            )
+            os.makedirs(folder_path, exist_ok=True)
+            data_name = os.path.join(
+                folder_path, f"{now.strftime('%Y-%m-%d_%H-%M-%S')}.csv"
+            )
+            df[["match_report"]].rename(columns={"match_report": "match_id"}).to_csv(
+                data_name, index=False
+            )
+            self.logger.info(f"✅📦  Success split match_ids to a file : {data_name} ")
+            return df
+        except Exception as e:
+            self.logger.error(f"❌ 📦 Fail split match_ids to a file : {data_name}")
+            pass
 
 
 if __name__ == "__main__":
