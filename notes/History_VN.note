@@ -53,5 +53,11 @@ Could not convert DataFrame to Parquet...... hơi lâu rồi á
 .... sau cả ngày từ nghĩ vì giống hex nên nó tự cnvert đến vân vân mây mây. tối ngủ mới nhận ra là do bản dim_player và player cũ của mình .
 player cũ có lấy theo int, còn cái mới alf stringmaf mình đi gọi cái cũ so sánh
 player và squad cơ bản fix xong, còn match(saf) đang gặp lỗi tách điểm bị sai(transfomer) nên không load lên neon dc.
+à (4) 0-1 (2) này là điểm gì nhỉ, thôi loại bỏ số trong ngoặc luôn.
+ok, score xong
+còn match detail, phần này phức tạp nhất vì nó phải chạy sau khi score chạy, tuy nhiên score chạy thì nó ra file csv về các list match id, 
+Mình chỉ viết code cho 1 file ( truyền attribute match id vào và chạy) nhưng bây h đặt ra là load tất cả các match id theo season !
+hum...vì mình lưu vị trí cho match detail không theo season nên không thể chạy theo season,
+vậy chỉ cần thay đỏi cách lưu và cách lấy thôi nhỉ fbref không làm thì mình làm ! Con đường rộng mở :D
 
 
