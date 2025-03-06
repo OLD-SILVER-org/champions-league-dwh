@@ -53,7 +53,7 @@ class MatchDetailsLoader(NeonLoader):
         ]
 
         self.load_csv(path, self.TABLE_MATCH_DETAILS, columns=columns)
-        self.logger.info(f"✅ Load Done for match {match_id}")
+        self.logger.info(f"✅ Load Done for match {self.match_id}")
 
     def get_transformed_path(self):
         """Load transformed data from file"""

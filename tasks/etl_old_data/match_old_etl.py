@@ -75,7 +75,7 @@ class MatchOldETL(BaseOldETL):
 
 if __name__ == "__main__":
     pl = MatchOldETL()
-    pl.extract()
-    pl.transform()
+    # pl.extract()
+    # pl.transform()
     pl.load()
     # pl.load_to_dwh()
