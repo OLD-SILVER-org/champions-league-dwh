@@ -126,10 +126,3 @@ class SquadScraper(SeleniumScraper):
                 self.logger.error(f"❌ Error processing row {row.text}: {e}")
 
         return df
-
-
-if __name__ == "__main__":
-    scraper = SquadScraper()
-    scraper.get_current_season_data()
-    scraper.quit()
-    pass

@@ -15,7 +15,7 @@ from tasks.load.dwh.dim_player_loader import DimPlayerLoader
 load_dotenv()
 
 
-class playerOldETL(BaseOldETL):
+class PlayerOldETL(BaseOldETL):
     def __init__(self):
         super().__init__()
         # Attributes

@@ -53,7 +53,9 @@ class NeonLoader(ABC):
             self.logger.info("✅ Successfully loaded %s into %s", file_path, table_name)
 
         except Exception as e:
-            self.logger.info("❌ Failed to load %s into %s", file_path, table_name)
+            self.logger.info(
+                "❌ Failed to load %s into %s : %s", file_path, table_name, e
+            )
 
     @abstractmethod
     def load_data(self, season):
