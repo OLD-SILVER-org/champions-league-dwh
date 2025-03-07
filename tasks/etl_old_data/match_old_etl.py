@@ -64,6 +64,7 @@ class MatchOldETL(BaseOldETL):
     def load(self):
         list_old_seasons = list(range(self.START_SEASON, self.current_season + 1))
         for season in list_old_seasons:
+            self.loader.season = season
             self.loader.load_data_by_season(season)
         pass
 

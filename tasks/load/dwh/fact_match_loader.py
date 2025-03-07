@@ -1,6 +1,8 @@
 from tasks.load.dwh.bq_loader import BigQueryLoader
 import os
 from dotenv import load_dotenv
+import uuid
+from pandas_gbq import to_gbq
 
 load_dotenv()
 
@@ -41,34 +43,21 @@ class FactMatchLoader(BigQueryLoader):
         column_mapping = {
             "match_id": "match_nk",
             "player_id": "player_nk",
-            "team": "xg_home_squad",
-            "xg_away": "xg_away_squad",
-            "match_report": "match_nk",
+            "team_id": "squad_nk",
         }
+
         df = df.rename(columns=column_mapping)
         # create unique id - String
-        df["id"] = [str(uuid.uuid4()) for _ in range(len(df))]
+        # df["id"] = [str(uuid.uuid4()) for _ in range(len(df))]
         # Select required columns
-        fact_scores_columns = [
-            "id",
-            "season",
-            "round",
-            "week",
-            "day",
-            "home_squad",
-            "xg_home_squad",
-            "xg_away_squad",
-            "away_squad",
-            "attendance",
-            "venue",
-            "referee",
-            "match_nk",
-            "match_datetime",
-            "home_score",
-            "away_score",
-            "updated_at",
-        ]
-        df = df[fact_scores_columns]
+        if "bench" in df.columns:
+            df["bench"] = df["bench"].astype(int)
+
+        # Đảm bảo kiểu dữ liệu
+        df["match_nk"] = df["match_nk"].astype(str)
+        df["player_nk"] = df["player_nk"].astype(str)
+        df["squad_nk"] = df["squad_nk"].astype(str)
+
         # Upload to BigQuery
         try:
             to_gbq(
@@ -77,9 +66,9 @@ class FactMatchLoader(BigQueryLoader):
                 project_id=self.BIGQUERY_PROJECT_ID,
                 if_exists="append",
             )
+            self.logger.info(f"✅ Successfully uploaded {len(df)} rows to {table_id}")
         except Exception as e:
-            print(f"ERROT: {e}")
-        self.logger.info(f"✅ Successfully uploaded {len(df)} rows to {table_id}")
+            self.logger.error(f"❌ ERROR: Fail to update {table_id} \n: {e}")
 
 
 if __name__ == "__main__":

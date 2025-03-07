@@ -100,6 +100,9 @@ class SeleniumScraper(ABC):
         """Abstract method to save scraped data."""
         pass
 
+    def scrape_data(self):
+        return self.scrape_data(self.current_season)
+
     def get_current_season_data(self):
         """Scrape the current season's match data."""
         return self.scrape_data(self.current_season)

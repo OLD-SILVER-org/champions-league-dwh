@@ -26,7 +26,7 @@ class BaseTransformer(ABC):
         """Determine the current football season."""
         current_year = datetime.datetime.now().year
         current_month = datetime.datetime.now().month
-        return current_year - 1 if current_month <= 6 else current_year
+        return str(current_year - 1 if current_month <= 6 else current_year)
 
     def transform_newest_data(self):
         """Transform historical data from past seasons"""

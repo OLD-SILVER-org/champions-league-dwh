@@ -8,12 +8,9 @@ class MatchDetailsLoader(NeonLoader):
         self.MATCH_DETAILS_LOCATION = str(os.getenv("MATCH_DETAILS_LOCATION")).upper()
         self.TABLE_MATCH_DETAILS = os.getenv("TABLE_MATCH_DETAILS")
         self.match_id = match_id
-        self.season = season
+        self.season = self.get_current_season()
 
-    def load_newest_data(self):
-        self.load_data(self.season)
-
-    def load_data_by_season(self):
+    def load_newest_data_by_season(self):
         self.load_data_by_season(self.season)
 
     def load_data_by_season(self, season):

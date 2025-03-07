@@ -5,12 +5,15 @@ import datetime
 
 
 class MatchDetailsTransfomer(BaseTransformer):
-    def __init__(self, match_id=0, season=2017):
+    def __init__(self, match_id=0, season="2017"):
         """Initialize MatchDetailsTransfomer."""
         super().__init__()
         self.MATCH_DETAILS_LOCATION = os.getenv("MATCH_DETAILS_LOCATION")
         self.match_id = match_id
         self.season = self.get_current_season()
+
+    def transform_newest_data_by_season(self):
+        self.transform_data_by_season(str(self.season))
 
     def transform_data_by_season(self, season):
         """Transform data for all matches in a season."""
