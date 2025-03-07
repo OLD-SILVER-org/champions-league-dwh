@@ -56,7 +56,4 @@ class ScoreOldETL(BaseOldETL):
 
 if __name__ == "__main__":
     pl = ScoreOldETL()
-    pl.extract()
-    pl.transform()
-    pl.load()
-    pl.load_to_dwh()
+    pl.process()

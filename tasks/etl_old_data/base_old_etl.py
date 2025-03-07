@@ -45,4 +45,5 @@ class BaseOldETL(ABC):
         self.extract()
         self.transform()
         self.load()
+        self.load_to_dwh()
         pass
