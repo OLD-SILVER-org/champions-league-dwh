@@ -59,5 +59,16 @@ còn match detail, phần này phức tạp nhất vì nó phải chạy sau khi
 Mình chỉ viết code cho 1 file ( truyền attribute match id vào và chạy) nhưng bây h đặt ra là load tất cả các match id theo season !
 hum...vì mình lưu vị trí cho match detail không theo season nên không thể chạy theo season,
 vậy chỉ cần thay đỏi cách lưu và cách lấy thôi nhỉ fbref không làm thì mình làm ! Con đường rộng mở :D
+à thì xong rồi mà không có dữ liệu t test, mà nó còn bị ohuj thuộc vào việc task score chạy trước ( để split match_id)
+mà chạy old data tốn lắm, mỗi season có khaongr 132 trận đấu, nghĩ tới việc selenium mở 130 tap là thấy máy nó muốn sập rồi
+mà 130 chỉ là 1 season thôi á, mà chỉ là việc cào thông tin trận đấu thôi, còn x4 bảng cơ.
+Đây là hạn chế của việc cào dữ liệu rồi nân sart season lên 2020 đi cho nhẹ.
+bfsoup chắc nhẹ hơn nhưng bị chặn hoài.
+ok, thử thêm docker và airflow tuy nhiên gặp nhiều lỗi
+cứ bảo tạo init db đi mà gõ không được, vào container mà cũng không thực thi dc.
+mà chạy docker nó tốn kinh, CPU toàn trên 80%, ram 10/16g , nếu mà lúc trc mình không lắp thêm ram chì tèo luôn rồi
+chạy docker, vscode và 1 tap chrom mà văng luôn , Hoang mang !
+Ok, sau thời gian học docker thì quyết định sẽ tập dùng docker để đóng gói ứng dụng rồi chạy chay trước 
+sau đó mới áp dụng airflow vào, như vậy sẽ hiểu rõ cách hoạt động. Vừa làm vừa học
 
 
