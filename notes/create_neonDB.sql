@@ -37,7 +37,7 @@ CREATE TABLE players (
 );
 CREATE TABLE match_details (
     id SERIAL PRIMARY KEY,
-    match_id INTEGER,
+    match_id TEXT,
     player_id TEXT,
     shirt_number INTEGER,
     team_id TEXT,
