@@ -48,6 +48,8 @@ class SquadScraper(SeleniumScraper):
         except Exception as e:
             self.logger.error(f"❌ Scraping failed for season {season}: {e}")
             return None
+        finally:
+            self.quit()
 
     def save_data(self, dataframe, season):
         """Abstract method to save scraped data."""

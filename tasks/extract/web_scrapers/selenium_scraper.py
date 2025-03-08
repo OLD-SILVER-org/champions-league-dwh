@@ -19,13 +19,12 @@ load_dotenv()
 class SeleniumScraper(ABC):
     """Selenium-based web scraper with configurable settings."""
 
-    def __init__(self, headless=True, wait_time=5, use_fake_agent=True):
+    def __init__(self, headless=True, use_fake_agent=True):
         super().__init__()
         # Log
         self.logger = ETLLogger().get_logger()
         # Config
         self.config_option(headless, use_fake_agent)
-        self.setup_driver(wait_time)
         self.set_constants()
 
         pass
@@ -35,7 +34,7 @@ class SeleniumScraper(ABC):
         self.SAVE_PATH = os.getenv("SAVE_PATH")
         self.START_SEASON = int(os.getenv("START_SEASON"))
         self.current_season = self.get_current_season()
-        self.logger.info("📌 start selenium for season : %s", self.current_season)
+        self.logger.info("📌 Start selenium for season : %s", self.current_season)
         pass
 
     def config_option(self, headless, use_fake_agent):
@@ -54,13 +53,11 @@ class SeleniumScraper(ABC):
         self.options.add_argument("--ignore-certificate-errors")
         pass
 
-    def setup_driver(self, wait_time):
+    def setup_driver(self):
         """Initialize WebDriver with options."""
-
         self.driver = webdriver.Chrome(
             service=Service(ChromeDriverManager().install()), options=self.options
         )
-        self.wait_time = wait_time
 
     def get_current_season(self):
         """Determine the current football season."""
@@ -70,8 +67,8 @@ class SeleniumScraper(ABC):
 
     def get(self, url):
         """Open URL and wait."""
+        self.setup_driver()
         self.driver.get(url)
-        # time.sleep(random.uniform(self.wait_time, self.wait_time + 2))
 
     def find_element(self, by, value):
         """Find a single element."""

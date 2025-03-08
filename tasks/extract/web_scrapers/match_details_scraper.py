@@ -84,7 +84,8 @@ class MatchDetailsScraper(SeleniumScraper):
         except Exception as e:
             self.logger.error(f"❌ Scraping failed for match {self.match_id}: {e}")
             return None
-        return
+        finally:
+            self.quit()
 
     def get_team_ids(self):
         """Get the teams' IDs from the match page."""

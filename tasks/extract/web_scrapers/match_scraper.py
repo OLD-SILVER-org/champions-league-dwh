@@ -61,6 +61,8 @@ class MatchScraper(SeleniumScraper):
         except Exception as e:
             self.logger.info(f"❌ Scraping failed for season {season}")
             return None
+        finally:
+            self.quit()
 
     def extract_match_data(self, match_tbody, season):
         """Extract match data from the table."""
