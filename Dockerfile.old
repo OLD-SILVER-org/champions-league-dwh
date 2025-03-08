@@ -1,0 +1,31 @@
+# Base image với Python 3.13.1
+FROM python:3.13.1  
+
+# Đặt thư mục làm việc
+WORKDIR /etl_project
+
+# Cài đặt Chrome từ Google repo
+RUN apt-get update && apt-get install -y wget unzip curl gnupg && \
+    curl -fsSL https://dl.google.com/linux/linux_signing_key.pub | tee /etc/apt/trusted.gpg.d/google-chrome.asc && \
+    echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" | tee /etc/apt/sources.list.d/google-chrome.list && \
+    apt-get update && apt-get install -y google-chrome-stable && \
+    rm -rf /var/lib/apt/lists/*
+
+# Cài đặt ChromeDriver
+RUN CHROME_DRIVER_VERSION=$(curl -sS chromedriver.storage.googleapis.com/LATEST_RELEASE) && \
+    wget -N https://chromedriver.storage.googleapis.com/$CHROME_DRIVER_VERSION/chromedriver_linux64.zip -P /tmp && \
+    unzip /tmp/chromedriver_linux64.zip -d /usr/local/bin/ && \
+    rm /tmp/chromedriver_linux64.zip && \
+    chmod +x /usr/local/bin/chromedriver
+
+# Copy project vào container
+COPY . /etl_project
+
+# Set PYTHONPATH để import module dễ dàng
+ENV PYTHONPATH="/etl_project"
+
+# Cài đặt Python dependencies
+RUN pip install -r requirements.txt
+
+# Chạy ETL
+CMD ["python", "/etl_project/tasks/etl_old_datapy", "all"]
