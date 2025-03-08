@@ -70,5 +70,7 @@ mà chạy docker nó tốn kinh, CPU toàn trên 80%, ram 10/16g , nếu mà l�
 chạy docker, vscode và 1 tap chrom mà văng luôn , Hoang mang !
 Ok, sau thời gian học docker thì quyết định sẽ tập dùng docker để đóng gói ứng dụng rồi chạy chay trước 
 sau đó mới áp dụng airflow vào, như vậy sẽ hiểu rõ cách hoạt động. Vừa làm vừa học
-
+Test trên docker chật vật từ lỗi quyền phải zip  rồi unzip
+rồi đến phân chia, soát lỗi vặt, chrom driver, .. đến bước build thì ngốn 350% cpu? chắc là selerium, cần phải chỉnh lại.
+chạy test vài lần máy đơ luôn, sợ thiệt chứ. nghèo mà máy éo có
 
