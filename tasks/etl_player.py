@@ -12,7 +12,7 @@ class ETL_player:
         self.dim_loader = DimPlayerLoader()
 
     def extract(self):
-        self.scraper.scrape_data()
+        self.scraper.scrape_season_data()
 
     def transform(self):
         self.transformer.transform_newest_data()

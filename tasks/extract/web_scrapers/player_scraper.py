@@ -23,7 +23,7 @@ class PlayerScraper(SeleniumScraper):
         """Generate the FBref URL for a given season."""
         return f"https://fbref.com/en/comps/8/{season}-{season+1}/stats/{season}-{season+1}-Champions-League-Stats"
 
-    def scrape_data(self):
+    def scrape_season_data(self):
         """Scrape player data for current season."""
         self.scrape_data(self.current_season)
 

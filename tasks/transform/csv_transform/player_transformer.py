@@ -9,7 +9,6 @@ class PlayerTransformer(BaseTransformer):
         """Initialize SquadTransfomer."""
         super().__init__()
         self.PLAYERS_LOCATION = os.getenv("PLAYERS_LOCATION")
-        self.transform_old_data()
 
     def transform_data(self, season: str):
         """Run the entire transformation pipeline from extraction to storage."""
