@@ -13,8 +13,8 @@ class ETLOldData:
         pass
 
     def run(self):
-        self.old_squad_etl.process()
         self.old_player_etl.process()
+        self.old_squad_etl.process()
         self.old_score_etl.process()
         self.old_match_etl.process()
         pass
