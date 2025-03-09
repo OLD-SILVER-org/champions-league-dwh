@@ -1,7 +1,7 @@
-from etl_old_data.player_old_etl import PlayerOldETL
-from etl_old_data.squad_old_etl import SquadOldETL
-from etl_old_data.score_old_etl import ScoreOldETL
-from etl_old_data.match_old_etl import MatchOldETL
+from tasks.etl_old_data.player_old_etl import PlayerOldETL
+from tasks.etl_old_data.squad_old_etl import SquadOldETL
+from tasks.etl_old_data.score_old_etl import ScoreOldETL
+from tasks.etl_old_data.match_old_etl import MatchOldETL
 
 
 class ETLOldData:

@@ -14,7 +14,7 @@ class SquadScraper(SeleniumScraper):
 
     def __init__(self):
         """Initialize SeleniumScraper and load environment variables."""
-        super().__init__(headless=True, wait_time=1)
+        super().__init__(headless=True)
         self.SQUADS_LOCATION = os.getenv("SQUADS_LOCATION")
         # Log
         self.logger = ETLLogger().get_logger()

@@ -11,7 +11,7 @@ class MatchDetailsScraper(SeleniumScraper):
 
     def __init__(self, match_id=0):
         """Initialize SeleniumScraper and load environment variables."""
-        super().__init__(headless=True, wait_time=1)
+        super().__init__(headless=True)
         self.MATCH_DETAILS_LOCATION = os.getenv("MATCH_DETAILS_LOCATION")
         self.MATCHS_LOCATION = os.getenv("MATCHS_LOCATION")
         self.MATCH_ID_DETAILS_LOCATION = os.getenv("MATCH_ID_DETAILS_LOCATION")

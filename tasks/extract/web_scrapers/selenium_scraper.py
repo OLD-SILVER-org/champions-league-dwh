@@ -34,7 +34,6 @@ class SeleniumScraper(ABC):
         self.SAVE_PATH = os.getenv("SAVE_PATH")
         self.START_SEASON = int(os.getenv("START_SEASON"))
         self.current_season = self.get_current_season()
-        self.logger.info("📌 Start selenium for season : %s", self.current_season)
         pass
 
     def config_option(self, headless, use_fake_agent):
@@ -58,6 +57,7 @@ class SeleniumScraper(ABC):
         self.driver = webdriver.Chrome(
             service=Service(ChromeDriverManager().install()), options=self.options
         )
+        self.logger.info("📌 Start selenium for season : %s", self.current_season)
 
     def get_current_season(self):
         """Determine the current football season."""

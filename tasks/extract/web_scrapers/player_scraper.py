@@ -14,7 +14,7 @@ class PlayerScraper(SeleniumScraper):
 
     def __init__(self):
         """Initialize SeleniumScraper and load environment variables."""
-        super().__init__(headless=True, wait_time=1)
+        super().__init__(headless=True)
         self.PLAYERS_LOCATION = os.getenv("PLAYERS_LOCATION")
 
     pass
