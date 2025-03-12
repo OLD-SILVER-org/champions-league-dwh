@@ -38,6 +38,10 @@ ENV PYTHONPATH="/etl_project"
 
 # Set the default ETL mode to 'new' but allow override via environment variable
 ENV ETL_MODE=new
+# Install Rust
+RUN apt-get update && apt-get install -y curl && \
+    curl https://sh.rustup.rs -sSf | sh -s -- -y
+ENV PATH="/root/.cargo/bin:${PATH}"
 
 # Execute the ETL process based on the mode (old or new)
 CMD ["sh", "-c", "python /etl_project/tasks/etl_main.py $ETL_MODE"]
