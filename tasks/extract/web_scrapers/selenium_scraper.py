@@ -1,11 +1,10 @@
-# config/selenium_scraper.py
+import random
 from abc import ABC, abstractmethod
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
 from webdriver_manager.chrome import ChromeDriverManager
-from fake_useragent import UserAgent
 import datetime
 from dotenv import load_dotenv
 import os
@@ -14,6 +13,11 @@ from selenium.webdriver.support import expected_conditions as EC
 from logs.logger import ETLLogger
 
 load_dotenv()
+
+USER_AGENTS = [
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36",
+    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+]
 
 
 class SeleniumScraper(ABC):
@@ -27,14 +31,11 @@ class SeleniumScraper(ABC):
         self.config_option(headless, use_fake_agent)
         self.set_constants()
 
-        pass
-
     def set_constants(self):
         print(f"START_SEASON: {os.getenv('START_SEASON')}")
         self.SAVE_PATH = os.getenv("SAVE_PATH")
         self.START_SEASON = int(os.getenv("START_SEASON"))
         self.current_season = self.get_current_season()
-        pass
 
     def config_option(self, headless, use_fake_agent):
         """Configure options for the WebDriver."""
@@ -43,21 +44,20 @@ class SeleniumScraper(ABC):
             self.options.add_argument("--headless=new")
         # Random User-Agent
         if use_fake_agent:
-            self.options.add_argument(f"user-agent={UserAgent().random}")
+            user_agent = random.choice(USER_AGENTS)
+            self.options.add_argument(f"user-agent={user_agent}")
         # Anti-bot measures
         self.options.add_argument("--disable-blink-features=AutomationControlled")
         self.options.add_argument("--no-sandbox")
         self.options.add_argument("--disable-dev-shm-usage")
         # Ignore certificate SSL
         self.options.add_argument("--ignore-certificate-errors")
-        pass
 
     def setup_driver(self):
         """Initialize WebDriver with options."""
         self.driver = webdriver.Chrome(
             service=Service(ChromeDriverManager().install()), options=self.options
         )
-        self.logger.info("📌 Start selenium for season : %s", self.current_season)
 
     def get_current_season(self):
         """Determine the current football season."""

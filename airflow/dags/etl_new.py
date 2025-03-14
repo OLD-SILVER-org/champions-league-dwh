@@ -1,6 +1,11 @@
 from airflow import DAG
 from airflow.operators.python import PythonOperator
 from datetime import datetime
+import sys, os
+
+sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
+sys.path.append("/opt/airflow")
+
 from tasks.etl_new import ETLNew  # Import the new ETL pipeline
 
 # Initialize the ETL class

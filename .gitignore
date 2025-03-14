@@ -40,5 +40,11 @@ Thumbs.db
 config\gcp_service_key.json
 config
 # Logger
+.logs
+logs/
+
 logs/etl_process.log
 logs/scheduler/latest
+# airflow
+./airflow
+airflow

@@ -117,3 +117,8 @@ class PlayerScraper(SeleniumScraper):
         # Convert list to DataFrame once (better performance)
         df = pd.DataFrame(data, columns=columns)
         return df
+
+
+if __name__ == "__main__":
+    psc = PlayerScraper()
+    psc.scrape_season_data()

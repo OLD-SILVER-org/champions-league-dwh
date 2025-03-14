@@ -73,4 +73,13 @@ sau đó mới áp dụng airflow vào, như vậy sẽ hiểu rõ cách hoạt 
 Test trên docker chật vật từ lỗi quyền phải zip  rồi unzip
 rồi đến phân chia, soát lỗi vặt, chrom driver, .. đến bước build thì ngốn 350% cpu? chắc là selerium, cần phải chỉnh lại.
 chạy test vài lần máy đơ luôn, sợ thiệt chứ. nghèo mà máy éo có
+ok, sau khi sửa lap thì tìm hiểu về docker, airflow, nói chung là lên bờ xuống ruộng luôn
+lúc đầu còn chả biết dockerfile với .yml file almf cái qq giừ nữa, airflow là cái gì.
+rồi sau đó thì build raw 15G :D chạy éo nổi, mỗi lần buil là chết máy.
+h thì biết dc cấu trúc với cách nó haotj động,. dễ hình dung hơn nhiều rồi.
+cơ bản là mình sẽ làm việc với 3 iage là postgretsql, airflow và 1 image do mình làm (chứa project)
+airflow xây dựng trên image của mình .  gồm các container là init, web service và schedude, 1 cái postgretsql chạy ngoài nữa chứ.
+mà build thì còn gặp lỗi thư viện do pip nó cài cái mới nhất nhưng mà pypi éo có, phải lọc lại  từng chút từng chút, rồi thì cái log bị hạn chế do không dc cấp quyền làm build không dc, cái này ngáo luôn
+nhuwngmaf h biết là do mình build sai thôi. cơ bản chạy trên ui dc mà nó báo fail do mình ghi log linh tinh nên vậy
+nó nhầm á.
 
