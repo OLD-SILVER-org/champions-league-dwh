@@ -43,7 +43,7 @@ class PlayerScraper(SeleniumScraper):
             self.save_data(extracted_data, season)
             return extracted_data
         except Exception as e:
-            self.logger.error("❌ Scraping player failed for season %s : %s", season, e)
+            self.logger.debug("❌ Scraping player failed for season %s : %s", season, e)
             return None
         finally:
             self.quit()
@@ -113,7 +113,7 @@ class PlayerScraper(SeleniumScraper):
                     [season, nk, name, nation, positions, squad_id, squad, born]
                 )
             except Exception as e:
-                self.logger.error("❌ Error processing row: %s", e)
+                self.logger.debug("❌ Error processing row: %s", e)
         # Convert list to DataFrame once (better performance)
         df = pd.DataFrame(data, columns=columns)
         return df

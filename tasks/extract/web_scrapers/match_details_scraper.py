@@ -82,7 +82,7 @@ class MatchDetailsScraper(SeleniumScraper):
             self.save_data(extracted_data)
             return extracted_data
         except Exception as e:
-            self.logger.error(f"❌ Scraping failed for match {self.match_id}: {e}")
+            self.logger.debug(f"❌ Scraping failed for match {self.match_id}: {e}")
             return None
         finally:
             self.quit()

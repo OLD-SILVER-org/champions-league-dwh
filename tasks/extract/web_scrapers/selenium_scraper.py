@@ -114,7 +114,7 @@ class SeleniumScraper(ABC):
             button.click()
             self.logger.info("✅ Clicked button : %s", value)
         except Exception:
-            print(f"🔄 Normal click failed, trying JS click [{value}]")
+            self.logger.info(f"🔄 Normal click failed, trying JS click [{value}]")
             self.try_js_click(by, value)
 
     def try_js_click(self, by, value):
@@ -124,7 +124,7 @@ class SeleniumScraper(ABC):
             self.driver.execute_script("arguments[0].click();", button)
             self.logger.info("✅ JavaScript clicked button : %s", value)
         except Exception:
-            self.logger.error("❌ Completely failed to click button : %s", value)
+            self.logger.debug("❌ Completely failed to click button : %s", value)
 
     def close_cookie_banner(self):
         """Close the Osano cookie consent banner if it appears."""

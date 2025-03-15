@@ -1,12 +1,12 @@
-# Sử dụng image Airflow làm base để đảm bảo tương thích
+# Use the official Apache Airflow image as the base
 FROM apache/airflow:2.8.1
 
-# Chạy với quyền root để cài đặt dependencies
+# Switch to root user to install system dependencies
 USER root
 RUN apt-get update && apt-get install -y libpq-dev gcc \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# Cài đặt Chrome và ChromeDriver
+# Install Chrome and required dependencies for Selenium
 RUN apt-get update && apt-get install -y wget unzip curl gnupg \
     fonts-liberation libasound2 libatk-bridge2.0-0 libatk1.0-0 \
     libatspi2.0-0 libcups2 libdbus-1-3 libgbm1 libgtk-3-0 libnspr4 \
@@ -14,52 +14,54 @@ RUN apt-get update && apt-get install -y wget unzip curl gnupg \
     libxkbcommon0 libxrandr2 xdg-utils \
     && rm -rf /var/lib/apt/lists/*
 
+# Download and install Google Chrome
 RUN wget -q -O google-chrome.deb https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb \
     && apt-get install -y ./google-chrome.deb && rm google-chrome.deb
 
+# Download and install ChromeDriver for Selenium
 RUN CHROMEDRIVER_VERSION=114.0.5735.90 \
     && wget -N https://chromedriver.storage.googleapis.com/$CHROMEDRIVER_VERSION/chromedriver_linux64.zip -P /tmp \
     && unzip /tmp/chromedriver_linux64.zip -d /usr/local/bin/ \
     && rm /tmp/chromedriver_linux64.zip && chmod +x /usr/local/bin/chromedriver
 
-# Chuyển sang user airflow để cài đặt pip (Airflow yêu cầu)
+# Switch to airflow user to install Python packages (Airflow requirement)
 USER airflow
 RUN pip install --upgrade pip
 RUN pip install apache-airflow
 
-# Sao chép file requirements trước để tối ưu cache
+# Copy the requirements file before installing dependencies (to optimize Docker cache)
 COPY requirements.txt /requirements.txt
 
-# Gỡ bản SQLAlchemy cũ (nếu có) rồi cài lại phiên bản chuẩn cho Airflow
+# Remove old SQLAlchemy version and install compatible versions for Airflow
 RUN pip uninstall -y SQLAlchemy && pip install --no-cache-dir -r /requirements.txt \
     && pip install --no-cache-dir "SQLAlchemy==1.4.49" "psycopg2-binary<2.9"
 
-# Cài đặt Selenium ngay sau khi cài đặt các thư viện khác
+# Install Selenium after all other dependencies
 RUN pip install --no-cache-dir selenium
 
-# Kiểm tra Selenium đã cài đặt thành công chưa
+# Verify Selenium installation
 RUN python -c "import selenium; print(selenium.__file__)"
 
-# Chuyển lại quyền root để sao chép project
+# Switch back to root user to copy the project files
 USER root
 COPY . /etl_project
 WORKDIR /etl_project
 
-# Thiết lập biến môi trường để import module dễ dàng
+# Set PYTHONPATH to make module imports easier
 ENV PYTHONPATH="/etl_project"
 
-# Xóa cache apt để tránh lỗi Hash Sum mismatch
+# Clean up APT cache to prevent "Hash Sum mismatch" issues
 RUN rm -rf /var/lib/apt/lists/* && apt-get clean
 
-# Cài đặt curl và Rust
+# Install curl and Rust (for building additional packages if needed)
 RUN apt-get update --allow-releaseinfo-change && apt-get install -y curl \
     && curl https://sh.rustup.rs -sSf | sh -s -- -y
 
-# Thêm Rust vào PATH
+# Add Rust to the system PATH
 ENV PATH="/root/.cargo/bin:${PATH}"
 
-# Chạy với user airflow
+# Switch back to airflow user
 USER airflow
 
-# Lệnh mặc định để chạy ETL hoặc Airflow
-CMD ["sh", "-c", "if [ \"$ETL_MODE\" = \"new\" ]; then python /etl_project/tasks/etl_main.py; else airflow webserver; fi"]
+# Start both Scheduler and Webserver for automatic DAG execution
+CMD ["sh", "-c", "airflow scheduler & airflow webserver"]
