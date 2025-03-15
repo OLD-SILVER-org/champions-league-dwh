@@ -35,7 +35,7 @@ class BigQueryLoader(ABC):
                 if result:
                     self.logger.info("⏳ Last update for %s: %s", table_name, result[0])
                     return result[0]
-                self.logger.warning("⏩ No last update found for %s", table_name)
+                self.logger.warning(" ⚠️No last update found for %s", table_name)
                 return None  # Handle case where no record is found
 
         except Exception as e:

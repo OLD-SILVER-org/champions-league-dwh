@@ -7,7 +7,17 @@ sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
 sys.path.append("/opt/airflow")
 
 from tasks.etl_match import ETL_match  # Import ETL class
+from airflow.sensors.external_task import ExternalTaskSensor
 
+# Sensor to wait for etl_new_score_dag completion
+wait_for_score = ExternalTaskSensor(
+    task_id="wait_for_score_dag",
+    external_dag_id="etl_new_score_dag",
+    external_task_id=None,
+    mode="poke",
+    poke_interval=60,
+    timeout=7200,  # Timeout 2h
+)
 # Initialize the ETL class
 etl_new = ETL_match()
 
@@ -58,4 +68,4 @@ with DAG(
     )
 
     # Define task execution order
-    task_extract >> task_transform >> task_load >> task_load_to_dwh
+wait_for_score >> task_extract >> task_transform >> task_load >> task_load_to_dwh

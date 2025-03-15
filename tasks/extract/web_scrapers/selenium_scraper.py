@@ -87,6 +87,10 @@ class SeleniumScraper(ABC):
         """Generate the FBref URL for a given season."""
         pass
 
+    def scrape_season_data(self):
+        """Scrape player data for current season."""
+        self.scrape_data(self.current_season)
+
     @abstractmethod
     def scrape_data(self, season):
         """Abstract method to scrape data for a given season."""
