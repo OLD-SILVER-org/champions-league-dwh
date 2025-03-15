@@ -32,7 +32,7 @@ def load_to_dwh():
 # Define DAG
 with DAG(
     dag_id="etl_new_score_dag",
-    schedule_interval="@hourly",
+    schedule_interval="@daily",
     start_date=datetime(2024, 3, 9),
     catchup=False,
 ) as dag:

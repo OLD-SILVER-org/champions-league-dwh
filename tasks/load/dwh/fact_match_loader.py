@@ -53,7 +53,6 @@ class FactMatchLoader(BigQueryLoader):
         if "bench" in df.columns:
             df["bench"] = df["bench"].astype(int)
 
-        # Đảm bảo kiểu dữ liệu
         df["match_nk"] = df["match_nk"].astype(str)
         df["player_nk"] = df["player_nk"].astype(str)
         df["squad_nk"] = df["squad_nk"].astype(str)

@@ -9,15 +9,6 @@ sys.path.append("/opt/airflow")
 from tasks.etl_match import ETL_match  # Import ETL class
 from airflow.sensors.external_task import ExternalTaskSensor
 
-# Sensor to wait for etl_new_score_dag completion
-wait_for_score = ExternalTaskSensor(
-    task_id="wait_for_score_dag",
-    external_dag_id="etl_new_score_dag",
-    external_task_id=None,
-    mode="poke",
-    poke_interval=60,
-    timeout=7200,  # Timeout 2h
-)
 # Initialize the ETL class
 etl_new = ETL_match()
 
@@ -42,10 +33,20 @@ def load_to_dwh():
 # Define DAG
 with DAG(
     dag_id="etl_new_match_dag",
-    schedule_interval="@hourly",
+    schedule_interval="@daily",
     start_date=datetime(2024, 3, 9),
     catchup=False,
 ) as dag:
+
+    # Sensor to wait for etl_new_score_dag completion
+    wait_for_score = ExternalTaskSensor(
+        task_id="wait_for_score_dag",
+        external_dag_id="etl_new_score_dag",
+        external_task_id=None,
+        mode="poke",
+        poke_interval=60,
+        timeout=7200,  # Timeout 2h
+    )
 
     task_extract = PythonOperator(
         task_id="extract_match",
@@ -68,4 +69,4 @@ with DAG(
     )
 
     # Define task execution order
-wait_for_score >> task_extract >> task_transform >> task_load >> task_load_to_dwh
+    wait_for_score >> task_extract >> task_transform >> task_load >> task_load_to_dwh
