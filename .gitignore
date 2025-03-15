@@ -45,6 +45,3 @@ logs/
 
 logs/etl_process.log
 logs/scheduler/latest
-# airflow
-./airflow
-airflow
