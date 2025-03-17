@@ -1,4 +1,3 @@
-
 services:
   postgres:
     image: postgres:13
@@ -31,7 +30,7 @@ services:
       - ./airflow/logs:/opt/airflow/logs
       - ./airflow/plugins:/opt/airflow/plugins
     command: airflow db init
-    restart: on-failure  # Tự động restart nếu lỗi xảy ra
+    restart: on-failure
 
   airflow-webserver:
     image: etl-selenium
@@ -47,21 +46,13 @@ services:
       - AIRFLOW__CORE__EXECUTOR=LocalExecutor
       - AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=postgresql+psycopg2://airflow:airflow@postgres/airflow
       - AIRFLOW__CORE__LOAD_EXAMPLES=False
-      - AIRFLOW__WEBSERVER__DEFAULT_USER=airflow
-      - AIRFLOW__WEBSERVER__DEFAULT_PASSWORD=airflow
       - PYTHONPATH=/etl_project
-      - _AIRFLOW_DB_MIGRATE=True  # update DB schema trước khi chạy
-      - _AIRFLOW_WWW_USER_USERNAME=airflow
-      - _AIRFLOW_WWW_USER_PASSWORD=airflow
-      - _AIRFLOW_WWW_USER_EMAIL=admin@example.com
-      - _AIRFLOW_WWW_USER_FIRSTNAME=Admin
-      - _AIRFLOW_WWW_USER_LASTNAME=User
-      - _AIRFLOW_WWW_USER_ROLE=Admin
+      - _AIRFLOW_DB_MIGRATE=True
     volumes:
       - ./airflow/dags:/opt/airflow/dags
       - ./airflow/logs:/opt/airflow/logs
       - ./airflow/plugins:/opt/airflow/plugins
-      - ./tasks:/opt/airflow/dags/tasks  # Mount thư mục tasks
+      - ./tasks:/opt/airflow/dags/tasks
       - ./logs:/opt/airflow/dags/logs
     command: airflow webserver
 
@@ -81,6 +72,6 @@ services:
       - ./airflow/dags:/opt/airflow/dags
       - ./airflow/logs:/opt/airflow/logs
       - ./airflow/plugins:/opt/airflow/plugins
-      - ./tasks:/opt/airflow/dags/tasks  # Mount thư mục tasks
+      - ./tasks:/opt/airflow/dags/tasks
       - ./logs:/opt/airflow/dags/logs
     command: airflow scheduler
