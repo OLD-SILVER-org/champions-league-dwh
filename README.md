@@ -15,7 +15,7 @@ This project automates the extraction, transformation, and loading (ETL) of foot
 4. Orchestrate: Use Airflow to schedule and monitor the pipeline.
 ![Airflow](images/airflow.png)
 5. Business intelligence: Use Looker Studioto connect with data warehouse big query
-![Report](images/report.PNG)
+![Report](images/report.png)
 ## Setup & Installation
 ### Prerequisites
 
@@ -26,15 +26,10 @@ This project automates the extraction, transformation, and loading (ETL) of foot
 
 1. Clone the repository:
    ```bash
-   git clone <https://github.com/THANHTINHSHR/champions-league-dwh>
+   git clone https://github.com/THANHTINHSHR/champions-league-dwh
    ```
 2. Download Docker images:
     ```bash
-    # Pull postgres
-    docker pull postgres:13
-    # Pull apache/airflow
-    docker pull apache/airflow:2.8.1
-    # Build project image (etl-selenium)
     docker build -t etl-selenium -f Dockerfile.etl . 
     ```
 3. Create user/password for airflow:
