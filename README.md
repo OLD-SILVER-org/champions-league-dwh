@@ -51,7 +51,7 @@ This project automates the extraction, transformation, and loading (ETL) of foot
    - Open browser and go to `http://localhost:8080`
    - Login with: `admin / admin`
 6. Trigger the DAG to start the ETL process if you want!
-    ![airflow-dags](images/airflow-dags.PNG)
+    ![airflow-dags](images/airflow-dags.png)
 7. View dashboard:
     [📊 View Dashboard]
 https://lookerstudio.google.com/reporting/24e055e0-6423-46dd-9e31-e046312f5c4b
