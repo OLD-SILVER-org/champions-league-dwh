@@ -62,4 +62,4 @@ https://lookerstudio.google.com/reporting/24e055e0-6423-46dd-9e31-e046312f5c4b
 
 # Contact
 For any inquiries or collaboration, feel free to reach out:
-Email: thanhtinh14.06.1998@gmail.com
+Email: thanhtinh.de@gmail.com
