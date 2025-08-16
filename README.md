@@ -7,6 +7,7 @@ This project automates the extraction, transformation, and loading (ETL) of foot
 * PostgreSQL (NeonDB): Staging database before loading into BigQuery
 * Selenium: Web scraping FBref for match data
 * Docker: Containerized deployment
+* Looker Studio: Data visualization and reporting
 ## Data Pipeline Architecture
 1. Extract: Scrape match data from FBref using Selenium. Save as .CSV
 2. Transform: Clean and structure the data. Save as .CSV
@@ -63,3 +64,4 @@ https://lookerstudio.google.com/reporting/24e055e0-6423-46dd-9e31-e046312f5c4b
 # Contact
 For any inquiries or collaboration, feel free to reach out:
 Email: thanhtinh.de@gmail.com
+
